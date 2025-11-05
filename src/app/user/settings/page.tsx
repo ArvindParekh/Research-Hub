@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Bell, Lock, Eye, Trash2, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
-import Navbar from "@/components/navbar";
+import NavbarClient from "@/components/navbar-client";
 
 const settingsTabs = [
    { id: "profile", label: "Profile", icon: Settings },
@@ -60,7 +60,7 @@ export default function SettingsPage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <Navbar page='userSettings' />
+         <NavbarClient page='userSettings' />
 
          {/* Settings Layout */}
          <div className='container mx-auto px-4 py-12'>

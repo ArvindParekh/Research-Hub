@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Mail, MapPin, Briefcase, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import Navbar from "@/components/navbar";
+import NavbarClient from "@/components/navbar-client";
 
 // Mock current user data - in a real app, this would come from authentication context
 const currentUser = {
@@ -29,7 +29,7 @@ export default function UserProfilePage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <Navbar page='user' />
+         <NavbarClient page='user' />
 
          {/* Profile Content */}
          <div className='container mx-auto px-4 py-12'>
