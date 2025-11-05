@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+// import Navbar from "@/components/navbar";
 
 export default function WhiteboardPage() {
    const [selectedTool, setSelectedTool] = useState("pen");
@@ -57,6 +58,7 @@ export default function WhiteboardPage() {
    return (
       <div className='h-screen bg-background flex flex-col'>
          {/* Header */}
+         {/* <Navbar /> */}
          <header className='border-b bg-card p-4'>
             <div className='flex items-center justify-between'>
                <div className='flex items-center gap-4'>

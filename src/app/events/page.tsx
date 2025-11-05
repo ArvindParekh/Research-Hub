@@ -32,6 +32,7 @@ import {
    Eye,
 } from "lucide-react";
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 
 export default function EventsPage() {
    const featuredEvents = [
@@ -181,49 +182,7 @@ export default function EventsPage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Research Hub
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-6'>
-                     <Link
-                        href='/profiles'
-                        className='text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Researchers
-                     </Link>
-                     <Link
-                        href='/repository'
-                        className='text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Repository
-                     </Link>
-                     <Link
-                        href='/jobs'
-                        className='text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Jobs
-                     </Link>
-                     <Link href='/events' className='text-primary font-medium'>
-                        Events
-                     </Link>
-                  </nav>
-                  <Button asChild>
-                     <Link href='/events/create'>
-                        <Plus className='w-4 h-4 mr-2' />
-                        Create Event
-                     </Link>
-                  </Button>
-               </div>
-            </div>
-         </header>
+         <Navbar />
 
          <div className='container mx-auto px-4 py-8'>
             {/* Page Header */}

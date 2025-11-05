@@ -1,10 +1,12 @@
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
+// import Navbar from "@/components/navbar";
 
 export default function TermsPage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
+         {/* <Navbar /> */}
          <header className='border-b border-border bg-card'>
             <div className='container mx-auto px-4 py-4'>
                <div className='flex items-center justify-between'>

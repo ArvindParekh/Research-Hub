@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { BookOpen, Search } from "lucide-react";
 import Link from "next/link";
-
+import Navbar from "@/components/navbar";
 export default function HelpPage() {
    const faqItems = [
       {
@@ -41,7 +41,8 @@ export default function HelpPage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b border-border bg-card'>
+         <Navbar />
+         {/* <header className='border-b border-border bg-card'>
             <div className='container mx-auto px-4 py-4'>
                <div className='flex items-center justify-between'>
                   <Link href='/' className='flex items-center gap-2'>
@@ -86,7 +87,7 @@ export default function HelpPage() {
                   </nav>
                </div>
             </div>
-         </header>
+         </header> */}
 
          <div className='container mx-auto px-4 py-12'>
             <div className='max-w-3xl mx-auto'>

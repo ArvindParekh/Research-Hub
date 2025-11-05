@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Users, Search, Plus, BookOpen, MapPin } from "lucide-react";
 import Link from "next/link";
-
+import Navbar from "@/components/navbar";
 export default function GroupsPage() {
    const groups = [
       {
@@ -72,7 +72,8 @@ export default function GroupsPage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b border-border bg-card'>
+         <Navbar />
+         {/* <header className='border-b border-border bg-card'>
             <div className='container mx-auto px-4 py-4'>
                <div className='flex items-center justify-between'>
                   <Link href='/' className='flex items-center gap-2'>
@@ -120,7 +121,7 @@ export default function GroupsPage() {
                   </Button>
                </div>
             </div>
-         </header>
+         </header> */}
 
          <div className='container mx-auto px-4 py-8'>
             {/* Page Header */}

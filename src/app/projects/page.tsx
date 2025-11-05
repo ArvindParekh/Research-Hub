@@ -12,7 +12,7 @@ import {
    Search,
 } from "lucide-react";
 import Link from "next/link";
-
+import Navbar from "@/components/navbar";
 export default function ProjectsPage() {
    const projects = [
       {
@@ -144,7 +144,8 @@ export default function ProjectsPage() {
 
    return (
       <div className='min-h-screen bg-background'>
-         <header className='border-b border-border bg-card'>
+         <Navbar />
+         {/* <header className='border-b border-border bg-card'>
             <div className='container mx-auto px-4 py-6'>
                <div className='flex items-center justify-between'>
                   <Link href='/' className='flex items-center gap-3'>
@@ -183,7 +184,7 @@ export default function ProjectsPage() {
                   </Button>
                </div>
             </div>
-         </header>
+         </header> */}
 
          <div className='container mx-auto px-4 py-12'>
             <div className='mb-10'>

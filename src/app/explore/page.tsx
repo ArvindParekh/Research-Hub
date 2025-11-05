@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { BookOpen, Zap, Users, Calendar, Briefcase } from "lucide-react";
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 
 export default function ExplorePage() {
    const sections = [
@@ -58,7 +59,8 @@ export default function ExplorePage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b border-border bg-card'>
+         <Navbar />
+         {/* <header className='border-b border-border bg-card'>
             <div className='container mx-auto px-4 py-4'>
                <div className='flex items-center justify-between'>
                   <Link href='/' className='flex items-center gap-2'>
@@ -106,7 +108,7 @@ export default function ExplorePage() {
                   </Button>
                </div>
             </div>
-         </header>
+         </header> */}
 
          <div className='container mx-auto px-4 py-12'>
             {/* Hero */}

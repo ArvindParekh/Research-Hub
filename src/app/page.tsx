@@ -10,75 +10,14 @@ import {
    TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
+import { ModeToggle } from "@/components/dark-mode-toggle";
+import Navbar from "@/components/navbar";
 
 export default function HomePage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b border-border bg-card'>
-            <div className='container mx-auto px-4 py-6'>
-               <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-3'>
-                     <div className='w-8 h-8 bg-primary rounded flex items-center justify-center'>
-                        <BookOpen className='w-4 h-4 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-lg font-semibold text-foreground'>
-                        Research Hub
-                     </h1>
-                  </div>
-                  <nav className='hidden md:flex items-center gap-8'>
-                     <Link
-                        href='/profiles'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Researchers
-                     </Link>
-                     <Link
-                        href='/groups'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Research Groups
-                     </Link>
-                     <Link
-                        href='/repository'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Repository
-                     </Link>
-                     <Link
-                        href='/jobs'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Jobs
-                     </Link>
-                     <Link
-                        href='/events'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Events
-                     </Link>
-                     <Link
-                        href='/messages'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Message Center
-                     </Link>
-                  </nav>
-                  <div className='flex items-center gap-3'>
-                     <Button
-                        variant='outline'
-                        asChild
-                        className='text-sm bg-transparent'
-                     >
-                        <Link href='/login'>Sign In</Link>
-                     </Button>
-                     <Button asChild className='text-sm'>
-                        <Link href='/register'>Join Now</Link>
-                     </Button>
-                  </div>
-               </div>
-            </div>
-         </header>
+         <Navbar />
 
          {/* Hero Section */}
          <section className='py-24 px-4'>
