@@ -2,8 +2,12 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/dark-mode-toggle";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
+import { stackServerApp } from "@/stack/server";
 
-export default function Navbar() {
+export default async function Navbar() {
+   const user = await stackServerApp.getUser();
+   let loggedIn = !!user;
+
    return (
       <header className='border-b border-border bg-card'>
          <div className='container mx-auto px-4 py-6'>
@@ -55,16 +59,24 @@ export default function Navbar() {
                   </Link>
                </nav>
                <div className='flex items-center gap-3'>
-                  <Button
-                     variant='outline'
-                     asChild
-                     className='text-sm bg-transparent'
-                  >
-                     <Link href='/login'>Sign In</Link>
-                  </Button>
-                  <Button asChild className='text-sm'>
-                     <Link href='/register'>Join Now</Link>
-                  </Button>
+                  {loggedIn ? (
+                     <Button asChild className='text-sm'>
+                        <Link href='/logout'>Logout</Link>
+                     </Button>
+                  ) : (
+                     <>
+                        <Button
+                           variant='outline'
+                           asChild
+                           className='text-sm bg-transparent'
+                        >
+                           <Link href='/login'>Sign In</Link>
+                        </Button>
+                        <Button asChild className='text-sm'>
+                           <Link href='/register'>Join Now</Link>
+                        </Button>
+                     </>
+                  )}
                   <ModeToggle />
                </div>
             </div>
