@@ -158,7 +158,7 @@ export default async function EventDetailsPage({
                         <BookOpen className='w-5 h-5 text-primary-foreground' />
                      </div>
                      <h1 className='text-xl font-bold text-foreground'>
-                        Academic Nexus
+                        Research Hub
                      </h1>
                   </Link>
                   <nav className='hidden md:flex items-center gap-6'>
