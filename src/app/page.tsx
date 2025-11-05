@@ -17,7 +17,7 @@ export default function HomePage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <Navbar />
+         <Navbar page='home' />
 
          {/* Hero Section */}
          <section className='py-24 px-4'>

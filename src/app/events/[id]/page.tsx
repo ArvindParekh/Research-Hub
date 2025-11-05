@@ -151,26 +151,7 @@ export default async function EventDetailsPage({
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         {/* <Navbar /> */}
-         <header className='border-b bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Research Hub
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-6'>
-                     <Link href='/events' className='text-primary font-medium'>
-                        Events
-                     </Link>
-                  </nav>
-               </div>
-            </div>
-         </header>
+         <Navbar page='events' />
 
          {/* Hero Section */}
          <div className='relative'>
@@ -480,7 +461,7 @@ export default async function EventDetailsPage({
                                        key={index}
                                        className='border rounded-lg p-4 hover:shadow-md transition-shadow'
                                     >
-                                       <div className='aspect-[3/4] bg-muted rounded mb-3 flex items-center justify-center'>
+                                       <div className='aspect-3/4 bg-muted rounded mb-3 flex items-center justify-center'>
                                           <span className='text-muted-foreground'>
                                              Poster {index + 1}
                                           </span>

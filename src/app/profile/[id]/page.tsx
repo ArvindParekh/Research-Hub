@@ -70,7 +70,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
    return (
       <div className='min-h-screen bg-background'>
-         <Navbar />
+         <Navbar page='profiles' />
          {/* <header className='border-b border-border bg-card'>
             <div className='container mx-auto px-4 py-6'>
                <div className='flex items-center justify-between'>

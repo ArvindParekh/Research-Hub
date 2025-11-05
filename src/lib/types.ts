@@ -1,0 +1,13 @@
+export type NavbarPage =
+   | "home"
+   | "profiles"
+   | "groups"
+   | "repository"
+   | "messages"
+   | "projects"
+   | "events"
+   | "help"
+   | "jobs"
+   | "privacy"
+   | "terms"
+   | "whiteboard";
