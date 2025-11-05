@@ -1,4 +1,12 @@
-import { Plus, Upload, Bell, LucideIcon, ArrowLeft, Settings, LogOut } from "lucide-react";
+import {
+   Plus,
+   Upload,
+   Bell,
+   LucideIcon,
+   ArrowLeft,
+   Settings,
+   LogOut,
+} from "lucide-react";
 import { NavbarPage } from "@/lib/types";
 
 export type NavbarLink = {
@@ -10,7 +18,7 @@ export type NavbarButton = {
    href: string;
    label: string;
    icon?: LucideIcon;
-   variant?: "default" | "outline";
+   variant?: "default" | "outline" | "ghost";
    size?: "default" | "sm";
 };
 
