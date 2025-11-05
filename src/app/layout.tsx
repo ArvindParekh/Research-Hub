@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { StackProvider, StackTheme } from "@stackframe/stack";
+import { stackClientApp } from "../stack/client";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -29,7 +31,7 @@ export default function RootLayout({
 }>) {
    return (
       <html lang='en'>
-         <body className={`${inter.variable} antialiased`}>{children}</body>
+         <body className={`${inter.variable} antialiased`}><StackProvider app={stackClientApp}><StackTheme>{children}</StackTheme></StackProvider></body>
       </html>
    );
 }
