@@ -56,7 +56,7 @@ Research Hub requires Node.js 18 or higher. We recommend using pnpm as the packa
 Clone the repository and install dependencies:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ArvindParekh/Research-Hub
 cd research-hub
 pnpm install
 ```
