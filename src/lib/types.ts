@@ -10,4 +10,6 @@ export type NavbarPage =
    | "jobs"
    | "privacy"
    | "terms"
-   | "whiteboard";
+   | "whiteboard"
+   | "user"
+   | "userSettings";

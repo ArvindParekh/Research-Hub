@@ -1,4 +1,4 @@
-import { Plus, Upload, Bell, LucideIcon, ArrowLeft } from "lucide-react";
+import { Plus, Upload, Bell, LucideIcon, ArrowLeft, Settings, LogOut } from "lucide-react";
 import { NavbarPage } from "@/lib/types";
 
 export type NavbarLink = {
@@ -185,6 +185,44 @@ export const navbarConfig: Record<NavbarPage, NavbarConfig> = {
          { href: "/events", label: "Events" },
       ],
       buttons: [],
+   },
+   user: {
+      links: [
+         { href: "/profiles", label: "Researchers" },
+         { href: "/groups", label: "Research Groups" },
+         { href: "/repository", label: "Repository" },
+      ],
+      buttons: [
+         {
+            href: "/user/settings",
+            label: "",
+            icon: Settings,
+            variant: "ghost",
+            size: "sm",
+         },
+         {
+            href: "/logout",
+            label: "",
+            icon: LogOut,
+            variant: "ghost",
+            size: "sm",
+         },
+      ],
+   },
+   userSettings: {
+      links: [
+         { href: "/profiles", label: "Researchers" },
+         { href: "/groups", label: "Research Groups" },
+         { href: "/repository", label: "Repository" },
+      ],
+      buttons: [
+         {
+            href: "/user",
+            label: "Back to Profile",
+            variant: "ghost",
+            size: "sm",
+         },
+      ],
    },
 };
 

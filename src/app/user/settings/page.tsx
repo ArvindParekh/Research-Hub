@@ -5,17 +5,10 @@ import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-   BookOpen,
-   Bell,
-   Lock,
-   Eye,
-   Trash2,
-   LogOut,
-   Settings,
-} from "lucide-react";
+import { Bell, Lock, Eye, Trash2, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
+import Navbar from "@/components/navbar";
 
 const settingsTabs = [
    { id: "profile", label: "Profile", icon: Settings },
@@ -56,56 +49,18 @@ export default function SettingsPage() {
       setFormData((prev) => ({ ...prev, [name]: value }));
    };
 
-   const handleNotificationChange = (key: string) => {
+   const handleNotificationChange = (key: keyof typeof notifications) => {
       setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
    };
 
-   const handlePrivacyChange = (key: string) => {
+   const handlePrivacyChange = (key: keyof typeof privacy) => {
       setPrivacy((prev) => ({ ...prev, [key]: !prev[key] }));
    };
 
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b border-border bg-card sticky top-0 z-50'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-3'>
-                     <div className='w-8 h-8 bg-primary rounded flex items-center justify-center'>
-                        <BookOpen className='w-4 h-4 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-lg font-semibold text-foreground'>
-                        Academic Nexus
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-8'>
-                     <Link
-                        href='/profiles'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Researchers
-                     </Link>
-                     <Link
-                        href='/groups'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Research Groups
-                     </Link>
-                     <Link
-                        href='/repository'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Repository
-                     </Link>
-                  </nav>
-                  <Link href='/user'>
-                     <Button size='sm' variant='ghost'>
-                        Back to Profile
-                     </Button>
-                  </Link>
-               </div>
-            </div>
-         </header>
+         <Navbar page='userSettings' />
 
          {/* Settings Layout */}
          <div className='container mx-auto px-4 py-12'>
@@ -308,7 +263,9 @@ export default function SettingsPage() {
                                        id={setting.key}
                                        className='w-5 h-5 rounded border-border cursor-pointer'
                                        onCheckedChange={() =>
-                                          handlePrivacyChange(setting.key)
+                                          handlePrivacyChange(
+                                             setting.key as keyof typeof privacy
+                                          )
                                        }
                                     />
                                  </div>
@@ -409,7 +366,9 @@ export default function SettingsPage() {
                                        id={setting.key}
                                        className='w-5 h-5 rounded border-border cursor-pointer'
                                        onCheckedChange={() =>
-                                          handleNotificationChange(setting.key)
+                                          handleNotificationChange(
+                                             setting.key as keyof typeof notifications
+                                          )
                                        }
                                     />
                                     {/* <input

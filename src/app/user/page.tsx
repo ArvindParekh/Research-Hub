@@ -1,18 +1,9 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-   BookOpen,
-   Settings,
-   LogOut,
-   Mail,
-   MapPin,
-   Briefcase,
-   ExternalLink,
-} from "lucide-react";
+import { Settings, Mail, MapPin, Briefcase, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 
 // Mock current user data - in a real app, this would come from authentication context
 const currentUser = {
@@ -38,50 +29,7 @@ export default function UserProfilePage() {
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b border-border bg-card sticky top-0 z-50'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-3'>
-                     <div className='w-8 h-8 bg-primary rounded flex items-center justify-center'>
-                        <BookOpen className='w-4 h-4 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-lg font-semibold text-foreground'>
-                        Academic Nexus
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-8'>
-                     <Link
-                        href='/profiles'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Researchers
-                     </Link>
-                     <Link
-                        href='/groups'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Research Groups
-                     </Link>
-                     <Link
-                        href='/repository'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Repository
-                     </Link>
-                  </nav>
-                  <div className='flex items-center gap-2'>
-                     <Link href='/user/settings'>
-                        <Button size='sm' variant='ghost'>
-                           <Settings className='w-4 h-4' />
-                        </Button>
-                     </Link>
-                     <Button size='sm' variant='ghost'>
-                        <LogOut className='w-4 h-4' />
-                     </Button>
-                  </div>
-               </div>
-            </div>
-         </header>
+         <Navbar page='user' />
 
          {/* Profile Content */}
          <div className='container mx-auto px-4 py-12'>

@@ -37,6 +37,7 @@ export default async function Navbar({ page = "home" }: { page?: NavbarPage }) {
                <div className='flex items-center gap-3'>
                   {config.buttons.map((button) => {
                      const Icon = button.icon;
+                     const isIconOnly = !button.label && Icon;
                      return (
                         <Button
                            key={button.href}
@@ -47,7 +48,13 @@ export default async function Navbar({ page = "home" }: { page?: NavbarPage }) {
                         >
                            {button.href === "#" ? (
                               <span className='flex items-center'>
-                                 {Icon && <Icon className='w-4 h-4 mr-2' />}
+                                 {Icon && (
+                                    <Icon
+                                       className={`w-4 h-4 ${
+                                          isIconOnly ? "" : "mr-2"
+                                       }`}
+                                    />
+                                 )}
                                  {button.label}
                               </span>
                            ) : (
@@ -55,7 +62,13 @@ export default async function Navbar({ page = "home" }: { page?: NavbarPage }) {
                                  href={button.href}
                                  className='flex items-center'
                               >
-                                 {Icon && <Icon className='w-4 h-4 mr-2' />}
+                                 {Icon && (
+                                    <Icon
+                                       className={`w-4 h-4 ${
+                                          isIconOnly ? "" : "mr-2"
+                                       }`}
+                                    />
+                                 )}
                                  {button.label}
                               </Link>
                            )}
