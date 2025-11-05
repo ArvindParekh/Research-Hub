@@ -34,7 +34,7 @@ export default function HomePage() {
                </p>
                <div className='flex flex-col sm:flex-row gap-4 justify-center'>
                   <Button size='lg' asChild className='text-base'>
-                     <Link href='/register'>Get Started</Link>
+                     <Link href='/handler/sign-up'>Get Started</Link>
                   </Button>
                   <Button
                      size='lg'

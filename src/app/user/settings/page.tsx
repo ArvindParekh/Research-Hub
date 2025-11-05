@@ -419,9 +419,15 @@ export default function SettingsPage() {
                            <h2 className='text-xl font-semibold mb-6'>
                               Session
                            </h2>
-                           <Button variant='destructive' className='w-full'>
-                              <LogOut className='w-4 h-4 mr-2' />
-                              Logout
+                           <Button
+                              variant='destructive'
+                              className='w-full'
+                              asChild
+                           >
+                              <Link href='/handler/sign-out'>
+                                 <LogOut className='w-4 h-4 mr-2' />
+                                 Logout
+                              </Link>
                            </Button>
                         </div>
                      </div>

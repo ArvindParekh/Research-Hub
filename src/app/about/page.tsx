@@ -65,7 +65,7 @@ export default function AboutPage() {
 
                   <div className='pt-6'>
                      <Button asChild>
-                        <Link href='/register'>Join the Community</Link>
+                        <Link href='/handler/sign-up'>Join the Community</Link>
                      </Button>
                   </div>
                </div>

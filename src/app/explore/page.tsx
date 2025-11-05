@@ -104,7 +104,7 @@ export default function ExplorePage() {
                      </Link>
                   </nav>
                   <Button asChild>
-                     <Link href='/register'>Join Now</Link>
+                     <Link href='/handler/sign-up'>Join Now</Link>
                   </Button>
                </div>
             </div>
@@ -161,7 +161,7 @@ export default function ExplorePage() {
                </p>
                <div className='flex gap-4 justify-center'>
                   <Button size='lg' asChild>
-                     <Link href='/register'>Create Account</Link>
+                     <Link href='/handler/sign-up'>Create Account</Link>
                   </Button>
                   <Button size='lg' variant='outline' asChild>
                      <Link href='/profiles'>Browse Researchers</Link>

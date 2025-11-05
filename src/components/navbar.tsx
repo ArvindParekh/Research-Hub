@@ -77,7 +77,7 @@ export default async function Navbar({ page = "home" }: { page?: NavbarPage }) {
                   })}
                   {loggedIn ? (
                      <Button asChild className='text-sm'>
-                        <Link href='/logout'>Logout</Link>
+                        <Link href='/handler/sign-out'>Logout</Link>
                      </Button>
                   ) : (
                      <>
@@ -86,10 +86,10 @@ export default async function Navbar({ page = "home" }: { page?: NavbarPage }) {
                            asChild
                            className='text-sm bg-transparent'
                         >
-                           <Link href='/login'>Sign In</Link>
+                           <Link href='/handler/sign-in'>Sign In</Link>
                         </Button>
                         <Button asChild className='text-sm'>
-                           <Link href='/register'>Join Now</Link>
+                           <Link href='/handler/sign-up'>Join Now</Link>
                         </Button>
                      </>
                   )}

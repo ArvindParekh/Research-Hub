@@ -209,7 +209,7 @@ export const navbarConfig: Record<NavbarPage, NavbarConfig> = {
             size: "sm",
          },
          {
-            href: "/logout",
+            href: "/handler/sign-out",
             label: "",
             icon: LogOut,
             variant: "ghost",
