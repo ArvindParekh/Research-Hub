@@ -30,6 +30,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  following Connection[] @relation("Following")
+  followers Connection[] @relation("Followers")
+  
   // Research relationships
   researchInterests ResearchInterest[]
   publications Publication[]
@@ -42,6 +45,25 @@ model User {
   eventSpeakers EventSpeaker[] @relation("EventSpeakers")
   sessionSpeakers SessionSpeaker[]
   posterAuthors PosterAuthor[]
+}
+
+model Connection {
+  id String @id @default(uuid())
+
+  followerId String
+  followingId String
+  status ConnectionStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+
+  follower User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade) // should we have onDelete: Cascade here?
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+}
+
+enum ConnectionStatus {
+  Pending
+  Accepted
+  Rejected
 }
 
 // ============================================
