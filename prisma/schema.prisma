@@ -32,7 +32,7 @@ model User {
 
   following Connection[] @relation("Following")
   followers Connection[] @relation("Followers")
-  
+
   // Research relationships
   researchInterests ResearchInterest[]
   publications Publication[]
