@@ -13,3 +13,52 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// todo: h-index, students under professors, and projects
+model User {
+  id String @id
+
+  firstName String?
+  lastName String?
+  designation String?
+  institution String?
+  title String?
+  location String?
+  website String?
+  bio String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  researchInterests ResearchInterest[]
+  publications Publication[]
+}
+
+model Publication {
+  id String @id @default(uuid())
+
+  title String
+  abstract String? @db.Text
+  publicationDate DateTime?
+  journal String?
+  doi String? @unique // digital object identifier should be unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authors User[] // should we store the order of authors? if yes, we need to create a new join table 
+
+  citations_made Publication[] @relation("Citations")
+  citations_received Publication[] @relation("Citations")
+}
+
+model ResearchInterest {
+  id String @id @default(uuid())
+
+  interest String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users User[]
+}
