@@ -30,10 +30,23 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Research relationships
   researchInterests ResearchInterest[]
   publications Publication[]
+  
+  // Event relationships
+  eventRegistrations EventRegistration[]
+  eventReviews EventReview[]
+  bookmarkedEvents Event[] @relation("EventBookmarks")
+  organizedEvents Event[] @relation("EventOrganizer")
+  eventSpeakers EventSpeaker[] @relation("EventSpeakers")
+  sessionSpeakers SessionSpeaker[]
+  posterAuthors PosterAuthor[]
 }
 
+// ============================================
+// Publication Models
+// ============================================
 model Publication {
   id String @id @default(uuid())
 
@@ -61,4 +74,263 @@ model ResearchInterest {
   updatedAt DateTime @updatedAt
 
   users User[]
+}
+
+// ============================================
+// Event Models
+// ============================================
+
+model Event {
+  id String @id @default(uuid())
+  
+  title String
+  subtitle String?
+  description String? @db.Text
+  fullDescription String? @db.Text
+  
+  type EventType
+  format EventFormat
+  
+  startDate DateTime
+  endDate DateTime
+  timezone String?
+  
+  price String? // can be free, $50, etc.
+  currency String? // can be USD, EUR, etc.
+  
+  organizerId String?
+  organizerName String?
+  organizerLogo String?
+  
+  image String?
+  website String?
+  twitterHandle String?
+  linkedinHandle String?
+  isLive Boolean @default(false)
+  isFeatured Boolean @default(false)
+  
+  maxAttendees Int?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  organizer User? @relation("EventOrganizer", fields: [organizerId], references: [id])
+  tags EventTag[]
+  sessions Session[]
+  speakers EventSpeaker[]
+  posters Poster[]
+  registrations EventRegistration[]
+  reviews EventReview[]
+  bookmarks User[] @relation("EventBookmarks")
+  
+  @@index([type])
+  @@index([format])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([isLive])
+  @@index([isFeatured])
+  @@index([organizerId])
+}
+
+enum EventType {
+  Conference
+  Workshop
+  Symposium
+  Seminar
+  Webinar
+  Other
+}
+
+enum EventFormat {
+  Virtual
+  InPerson
+  Hybrid
+}
+
+model EventTag {
+  id String @id @default(uuid())
+  
+  name String
+  slug String? @unique
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  events Event[]
+}
+
+model Session {
+  id String @id @default(uuid())
+  
+  eventId String
+  title String
+  description String? @db.Text
+  
+  startTime DateTime
+  endTime DateTime
+  timezone String?
+  
+  type SessionType
+  
+  room String?
+  location String? // can be virtual gallery, track A, etc.
+  
+  videoUrl String?
+  recordingUrl String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  speakers SessionSpeaker[]
+  
+  @@index([eventId])
+  @@index([startTime])
+  @@index([type])
+}
+
+enum SessionType {
+  Keynote
+  Session
+  Poster
+  Workshop
+  Tutorial
+}
+model SessionSpeaker {
+  id String @id @default(uuid())
+  
+  sessionId String
+  userId String
+  
+  role SessionSpeakerRole? 
+  order Int? // for ordering multiple speakers - maybe not needed?
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([sessionId, userId])
+  @@index([sessionId])
+  @@index([userId])
+}
+
+enum SessionSpeakerRole {
+  KeynoteSpeaker
+  Presenter
+  Moderator
+}
+model EventSpeaker {
+  id String @id @default(uuid())
+  
+  eventId String
+  userId String? // optional since speaker might not be a user
+  
+  name String? // if speaker is not a user
+  title String? // professor, university of X
+  bio String? @db.Text
+  image String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user User? @relation("EventSpeakers", fields: [userId], references: [id], onDelete: SetNull)
+  
+  // note - no unique constraint on [eventId, userId] because userId is nullable
+  // multiple external speakers (no userId) can exist for same event
+  @@index([eventId])
+  @@index([userId])
+}
+
+model Poster {
+  id String @id @default(uuid())
+  
+  eventId String
+  title String
+  abstract String? @db.Text
+  
+  imageUrl String?
+  pdfUrl String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  authors PosterAuthor[]
+  
+  @@index([eventId])
+}
+
+model PosterAuthor {
+  id String @id @default(uuid())
+  
+  posterId String
+  userId String
+  
+  order Int? // author order - maybe not needed?
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  poster Poster @relation(fields: [posterId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([posterId, userId])
+  @@index([posterId])
+  @@index([userId])
+}
+
+model EventRegistration {
+  id String @id @default(uuid())
+  
+  eventId String
+  userId String
+  
+  status EventRegistrationStatus @default(Registered)
+  
+  registeredAt DateTime @default(now())
+  cancelledAt DateTime?
+  
+  // relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+}
+
+enum EventRegistrationStatus {
+  Registered
+  Cancelled
+  Waitlisted
+}
+
+model EventReview {
+  id String @id @default(uuid())
+  
+  eventId String
+  userId String
+  
+  rating Int // 1-5
+  comment String? @db.Text
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([rating])
 }
