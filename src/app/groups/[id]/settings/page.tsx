@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function GroupSettingsPage({
+export default async function GroupSettingsPage({
    params,
 }: {
-   params: { id: string };
+   params: Promise<{ id: string }>;
 }) {
+   const { id } = await params;
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
@@ -31,7 +32,7 @@ export default function GroupSettingsPage({
          <div className='container mx-auto px-4 py-8'>
             {/* Back Button */}
             <Link
-               href={`/groups/${params.id}`}
+               href={`/groups/${id}`}
                className='inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6'
             >
                <ArrowLeft className='w-4 h-4' />

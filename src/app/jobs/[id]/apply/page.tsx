@@ -24,10 +24,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function JobApplicationPage({
+export default async function JobApplicationPage({
    params,
 }: {
-   params: { id: string };
+   params: Promise<{ id: string }>;
 }) {
    // This would normally fetch job and user data
    const job = {
@@ -417,27 +417,27 @@ I am writing to express my strong interest in the Assistant Professor position i
                      <CardContent>
                         <div className='space-y-3 text-sm'>
                            <div className='flex items-start gap-2'>
-                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
+                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 shrink-0' />
                               <span>
                                  Tailor your cover letter to the specific
                                  position
                               </span>
                            </div>
                            <div className='flex items-start gap-2'>
-                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
+                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 shrink-0' />
                               <span>
                                  Highlight relevant research experience
                               </span>
                            </div>
                            <div className='flex items-start gap-2'>
-                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
+                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 shrink-0' />
                               <span>
                                  Include specific examples in your teaching
                                  statement
                               </span>
                            </div>
                            <div className='flex items-start gap-2'>
-                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
+                              <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 shrink-0' />
                               <span>
                                  Ensure all documents are properly formatted
                               </span>

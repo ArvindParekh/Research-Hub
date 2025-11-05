@@ -76,8 +76,13 @@ const getPaper = (id: string) => {
    return papers[id as keyof typeof papers];
 };
 
-export default function PaperPage({ params }: { params: { id: string } }) {
-   const paper = getPaper(params.id);
+export default async function PaperPage({
+   params,
+}: {
+   params: Promise<{ id: string }>;
+}) {
+   const { id } = await params;
+   const paper = getPaper(id);
 
    if (!paper) {
       return <div>Paper not found</div>;

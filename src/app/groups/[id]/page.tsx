@@ -74,12 +74,13 @@ const getGroup = (id: string) => {
    return groups[id];
 };
 
-export default function GroupDetailPage({
+export default async function GroupDetailPage({
    params,
 }: {
-   params: { id: string };
+   params: Promise<{ id: string }>;
 }) {
-   const group = getGroup(params.id);
+   const { id } = await params;
+   const group = getGroup(id);
 
    if (!group) {
       return (

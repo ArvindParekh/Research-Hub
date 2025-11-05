@@ -61,8 +61,13 @@ const getResearcher = (id: string) => {
    return researchers[id as keyof typeof researchers];
 };
 
-export default function ProfilePage({ params }: { params: { id: string } }) {
-   const researcher = getResearcher(params.id);
+export default async function ProfilePage({
+   params,
+}: {
+   params: Promise<{ id: string }>;
+}) {
+   const { id } = await params;
+   const researcher = getResearcher(id);
 
    if (!researcher) {
       return <div>Researcher not found</div>;

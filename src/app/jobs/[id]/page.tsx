@@ -99,8 +99,13 @@ const getJob = (id: string) => {
    return jobs[id as keyof typeof jobs];
 };
 
-export default function JobDetailsPage({ params }: { params: { id: string } }) {
-   const job = getJob(params.id);
+export default async function JobDetailsPage({
+   params,
+}: {
+   params: Promise<{ id: string }>;
+}) {
+   const { id } = await params;
+   const job = getJob(id);
 
    if (!job) {
       return <div>Job not found</div>;
@@ -277,7 +282,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                                        key={index}
                                        className='flex items-start gap-2'
                                     >
-                                       <div className='w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0'></div>
+                                       <div className='w-2 h-2 bg-primary rounded-full mt-2 shrink-0'></div>
                                        <span className='text-muted-foreground'>
                                           {req}
                                        </span>
@@ -299,7 +304,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                                        key={index}
                                        className='flex items-start gap-2'
                                     >
-                                       <div className='w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0'></div>
+                                       <div className='w-2 h-2 bg-blue-500 rounded-full mt-2 shrink-0'></div>
                                        <span className='text-muted-foreground'>
                                           {pref}
                                        </span>
@@ -323,7 +328,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                                  key={index}
                                  className='flex items-center gap-2'
                               >
-                                 <CheckCircle className='w-4 h-4 text-green-500 flex-shrink-0' />
+                                 <CheckCircle className='w-4 h-4 text-green-500 shrink-0' />
                                  <span className='text-muted-foreground'>
                                     {benefit}
                                  </span>
@@ -345,7 +350,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                                  key={index}
                                  className='flex items-start gap-3'
                               >
-                                 <div className='w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0'>
+                                 <div className='w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium shrink-0'>
                                     {index + 1}
                                  </div>
                                  <span className='text-muted-foreground'>
