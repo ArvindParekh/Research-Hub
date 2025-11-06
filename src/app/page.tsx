@@ -8,12 +8,17 @@ import {
    Calendar,
    Briefcase,
    TrendingUp,
+   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "@/components/dark-mode-toggle";
 import Navbar from "@/components/navbar";
+import { stackServerApp } from "@/stack/server";
 
-export default function HomePage() {
+export default async function HomePage() {
+   const user = await stackServerApp.getUser();
+   const loggedIn = !!user;
+
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
@@ -33,17 +38,33 @@ export default function HomePage() {
                   science. A modern platform built for the academic community.
                </p>
                <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-                  <Button size='lg' asChild className='text-base'>
-                     <Link href='/handler/sign-up'>Get Started</Link>
-                  </Button>
-                  <Button
-                     size='lg'
-                     variant='outline'
-                     asChild
-                     className='text-base bg-transparent'
-                  >
-                     <Link href='/explore'>Explore</Link>
-                  </Button>
+                  {loggedIn ? (
+                     <>
+                        <Button size='lg' asChild className='text-base'>
+                           <Link
+                              href='/feed'
+                              className='flex items-center gap-2'
+                           >
+                              Feed
+                              <ArrowRight className='w-4 h-4' />
+                           </Link>
+                        </Button>
+                     </>
+                  ) : (
+                     <>
+                        <Button size='lg' asChild className='text-base'>
+                           <Link href='/handler/sign-up'>Get Started</Link>
+                        </Button>
+                        <Button
+                           size='lg'
+                           variant='outline'
+                           asChild
+                           className='text-base bg-transparent'
+                        >
+                           <Link href='/explore'>Explore</Link>
+                        </Button>
+                     </>
+                  )}
                </div>
             </div>
          </section>
