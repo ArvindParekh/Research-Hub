@@ -19,8 +19,9 @@ import {
    SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Upload, X, Plus } from "lucide-react";
+import { Upload, X, Plus } from "lucide-react";
 import Link from "next/link";
+import NavbarClient from "@/components/navbar-client";
 
 export default function SubmitPaperPage() {
    const [title, setTitle] = useState("");
@@ -65,27 +66,7 @@ export default function SubmitPaperPage() {
 
    return (
       <div className='min-h-screen bg-background'>
-         {/* Header */}
-         <header className='border-b bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Academic Nexus
-                     </h1>
-                  </Link>
-                  <Link
-                     href='/repository'
-                     className='text-muted-foreground hover:text-foreground transition-colors'
-                  >
-                     Back to Repository
-                  </Link>
-               </div>
-            </div>
-         </header>
+         <NavbarClient page='repositorySubmit' />
 
          <div className='container mx-auto px-4 py-8 max-w-3xl'>
             <div className='mb-8'>

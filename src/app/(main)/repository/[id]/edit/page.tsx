@@ -19,8 +19,9 @@ import {
    SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, X, Plus } from "lucide-react";
+import { X, Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import NavbarClient from "@/components/navbar-client";
 
 export default function EditPaperPage({ params }: { params: { id: string } }) {
    const [title, setTitle] = useState(
@@ -70,34 +71,25 @@ export default function EditPaperPage({ params }: { params: { id: string } }) {
 
    return (
       <div className='min-h-screen bg-background'>
-         {/* Header */}
-         <header className='border-b bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Academic Nexus
-                     </h1>
-                  </Link>
-                  <Link
-                     href={`/repository/${params.id}`}
-                     className='text-muted-foreground hover:text-foreground transition-colors'
-                  >
-                     Back to Paper
-                  </Link>
-               </div>
-            </div>
-         </header>
+         <NavbarClient page='repositoryEdit' />
 
          <div className='container mx-auto px-4 py-8 max-w-3xl'>
             <div className='mb-8'>
-               <h1 className='text-3xl font-bold mb-2'>Edit Paper</h1>
-               <p className='text-muted-foreground'>
-                  Update your paper details. You can save changes at any time.
-               </p>
+               <div className='flex items-center justify-between mb-4'>
+                  <div>
+                     <h1 className='text-3xl font-bold mb-2'>Edit Paper</h1>
+                     <p className='text-muted-foreground'>
+                        Update your paper details. You can save changes at any
+                        time.
+                     </p>
+                  </div>
+                  <Button variant='outline' size='sm' asChild>
+                     <Link href={`/repository/${params.id}`}>
+                        <ArrowLeft className='w-4 h-4 mr-2' />
+                        Back to Paper
+                     </Link>
+                  </Button>
+               </div>
             </div>
 
             <div className='space-y-6'>

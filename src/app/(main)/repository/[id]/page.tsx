@@ -24,7 +24,6 @@ import {
    DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-   BookOpen,
    Download,
    Eye,
    Star,
@@ -40,6 +39,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
+import NavbarClient from "@/components/navbar-client";
 
 // This would normally come from a database
 const getPaper = (id: string) => {
@@ -153,29 +153,7 @@ export default function PaperPage({ params }: { params: { id: string } }) {
 
    return (
       <div className='min-h-screen bg-background'>
-         {/* Header */}
-         <header className='border-b bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Academic Nexus
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-6'>
-                     <Link
-                        href='/repository'
-                        className='text-primary font-medium'
-                     >
-                        Repository
-                     </Link>
-                  </nav>
-               </div>
-            </div>
-         </header>
+         <NavbarClient page='repositoryPaper' />
 
          <div className='container mx-auto px-4 py-8'>
             {/* Paper Header */}

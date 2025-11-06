@@ -89,6 +89,53 @@ export const navbarConfig: Record<NavbarPage, NavbarConfig> = {
          },
       ],
    },
+   repositorySubmit: {
+      links: [
+         { href: "/profiles", label: "Researchers" },
+         { href: "/messages", label: "Messages" },
+         { href: "/repository", label: "Repository" },
+         { href: "/jobs", label: "Jobs" },
+      ],
+      buttons: [
+         {
+            href: "/repository",
+            label: "Back to Repository",
+            icon: ArrowLeft,
+            variant: "outline",
+            size: "sm",
+         },
+      ],
+   },
+   repositoryPaper: {
+      links: [
+         { href: "/profiles", label: "Researchers" },
+         { href: "/messages", label: "Messages" },
+         { href: "/repository", label: "Repository" },
+         { href: "/jobs", label: "Jobs" },
+      ],
+      buttons: [
+         {
+            href: "/repository/submit",
+            label: "Submit Paper",
+            icon: Upload,
+         },
+      ],
+   },
+   repositoryEdit: {
+      links: [
+         { href: "/profiles", label: "Researchers" },
+         { href: "/messages", label: "Messages" },
+         { href: "/repository", label: "Repository" },
+         { href: "/jobs", label: "Jobs" },
+      ],
+      buttons: [
+         {
+            href: "/repository/submit",
+            label: "Submit Paper",
+            icon: Upload,
+         },
+      ],
+   },
    messages: {
       links: [
          { href: "/profiles", label: "Researchers" },
