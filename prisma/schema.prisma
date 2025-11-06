@@ -45,6 +45,12 @@ model User {
   eventSpeakers EventSpeaker[] @relation("EventSpeakers")
   sessionSpeakers SessionSpeaker[]
   posterAuthors PosterAuthor[]
+  
+  // Group relationships
+  ledGroups Group[] @relation("GroupLeader")
+  groupMemberships GroupMember[]
+  groupAnnouncements GroupAnnouncement[]
+  groupProjectMembers GroupProjectMember[]
 }
 
 model Connection {
@@ -355,4 +361,180 @@ model EventReview {
   @@index([eventId])
   @@index([userId])
   @@index([rating])
+}
+
+// ============================================
+// Research Group Models
+// ============================================
+
+model Group {
+  id String @id @default(uuid())
+  
+  name String
+  description String? @db.Text
+  fullDescription String? @db.Text
+  
+  field String? // research field
+  institution String?
+  
+  leaderId String
+  founded DateTime? // when the group was founded
+  
+  maxMembers Int?
+  
+  // Privacy & Access Settings
+  visibility GroupVisibility @default(Public)
+  joinRequiresApproval Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  leader User @relation("GroupLeader", fields: [leaderId], references: [id], onDelete: Cascade)
+  members GroupMember[]
+  topics GroupTopic[]
+  projects GroupProject[]
+  announcements GroupAnnouncement[]
+  
+  @@index([leaderId])
+  @@index([field])
+  @@index([institution])
+  @@index([createdAt])
+  @@index([visibility])
+}
+
+enum GroupVisibility {
+  Public
+  Private
+  Unlisted
+}
+
+model GroupMember {
+  id String @id @default(uuid())
+  
+  groupId String
+  userId String
+  
+  role GroupMemberRole?
+  status GroupMemberStatus @default(Active)
+  
+  // Admin permissions
+  isAdmin Boolean @default(false) // allows managing group settings and members
+  
+  joinedAt DateTime @default(now())
+  leftAt DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+  @@index([status])
+  @@index([role])
+  @@index([isAdmin])
+}
+
+enum GroupMemberRole {
+  Founder
+  Lead
+  SeniorResearcher
+  Researcher
+  Postdoc
+  PhDStudent
+  MastersStudent
+  ResearchAssistant
+  Other
+}
+
+enum GroupMemberStatus {
+  Active
+  Pending
+  Left
+}
+
+model GroupTopic {
+  id String @id @default(uuid())
+  
+  name String
+  slug String? @unique
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  groups Group[]
+}
+
+model GroupProject {
+  id String @id @default(uuid())
+  
+  groupId String
+  name String
+  description String? @db.Text
+  
+  status GroupProjectStatus @default(Planning)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  members GroupProjectMember[]
+  
+  @@index([groupId])
+  @@index([status])
+}
+
+enum GroupProjectStatus {
+  Planning
+  Active
+  OnHold
+  Completed
+  Cancelled
+}
+
+model GroupProjectMember {
+  id String @id @default(uuid())
+  
+  projectId String
+  userId String
+  
+  role String? // project-specific role
+  
+  joinedAt DateTime @default(now())
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  project GroupProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+model GroupAnnouncement {
+  id String @id @default(uuid())
+  
+  groupId String
+  userId String
+  
+  title String
+  content String? @db.Text
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([groupId])
+  @@index([userId])
+  @@index([createdAt])
 }
