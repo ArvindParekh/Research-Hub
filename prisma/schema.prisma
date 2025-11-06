@@ -57,6 +57,11 @@ model User {
   paperReviews PaperReview[]
   paperBookmarks PaperBookmark[]
   reviewHelpfulVotes ReviewHelpfulVote[]
+  
+  // Messaging relationships
+  directConversations ConversationParticipant[]
+  sentMessages Message[]
+  channelMemberships ChannelMember[]
 }
 
 model Connection {
@@ -405,6 +410,7 @@ model Group {
   topics GroupTopic[]
   projects GroupProject[]
   announcements GroupAnnouncement[]
+  channels Channel[]
   
   @@index([leaderId])
   @@index([field])
@@ -764,3 +770,125 @@ model PaperCitation {
   @@index([toPaperId])
   @@index([toPublicationId])
 }
+
+// ============================================
+// Messaging Models
+// ============================================
+
+model Conversation {
+  id String @id @default(uuid())
+  
+  type ConversationType
+  
+  // for direct messages
+  participants ConversationParticipant[]
+  
+  // for channel conversations - supports both in one
+  channel Channel?
+  
+  messages Message[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([type])
+  @@index([updatedAt])
+}
+
+enum ConversationType {
+  Direct
+  Channel
+}
+
+// explicit join table to store createdAt (useful for showing when a convo started). if not needed, remove it later, and use prisma's implicit join.
+model ConversationParticipant {
+  id String @id @default(uuid())
+  
+  conversationId String
+  userId String
+  
+  createdAt DateTime @default(now())
+  lastReadAt DateTime? // tracks when user last read messages in this conversation (for unread counts)
+  
+  // relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+}
+
+model Channel {
+  id String @id @default(uuid())
+  
+  groupId String
+  name String // like general, papers, experiments
+  description String? @db.Text
+  
+  conversationId String? @unique // one-to-one with conversation
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  members ChannelMember[]
+  
+  @@unique([groupId, name])
+  @@index([groupId])
+  @@index([name])
+  @@index([conversationId])
+}
+
+model ChannelMember {
+  id String @id @default(uuid())
+  
+  channelId String
+  userId String
+  
+  // optional: for future private channels or muted channels
+  role ChannelMemberRole? @default(Member)
+  muted Boolean @default(false)
+  
+  joinedAt DateTime @default(now())
+  lastReadAt DateTime? // tracks when user last read messages in this channel (for unread counts)
+  
+  // relations
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([channelId, userId])
+  @@index([channelId])
+  @@index([userId])
+}
+
+enum ChannelMemberRole {
+  Member
+  Moderator
+  Admin
+}
+
+model Message {
+  id String @id @default(uuid())
+  
+  conversationId String
+  userId String // sender
+  
+  content String @db.Text
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // if updatedAt > createdAt, message was edited
+  
+  // relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([conversationId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// note: if we need per-message read receipts for DMs later, we can j add a new MessageRead model.
+// for now, using lastReadAt on ConversationParticipant/ChannelMember for unread counts
