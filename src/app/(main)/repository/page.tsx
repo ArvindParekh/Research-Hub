@@ -26,7 +26,6 @@ import {
    MessageSquare,
    Star,
    Calendar,
-   FileText,
    GitBranch,
    TrendingUp,
 } from "lucide-react";
@@ -131,58 +130,44 @@ export default function RepositoryPage() {
       <div className='min-h-screen bg-background'>
          {/* Header */}
          <Navbar page='repository' />
-         {/* <header className='border-b bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Research Hub
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-6'>
-                     <Link
-                        href='/profiles'
-                        className='text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Researchers
-                     </Link>
-                     <Link
-                        href='/messages'
-                        className='text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Messages
-                     </Link>
-                     <Link
-                        href='/repository'
-                        className='text-primary font-medium'
-                     >
-                        Repository
-                     </Link>
-                     <Link
-                        href='/jobs'
-                        className='text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Jobs
-                     </Link>
-                  </nav>
-                  <Button asChild>
-                     <Link href='/repository/submit'>
-                        <Upload className='w-4 h-4 mr-2' />
-                        Submit Paper
-                     </Link>
-                  </Button>
-               </div>
-            </div>
-         </header> */}
+         {/* <header className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <h1 className="text-xl font-bold text-foreground">Academic Nexus</h1>
+            </Link>
+            <nav className="hidden md:flex items-center gap-6">
+              <Link href="/profiles" className="text-muted-foreground hover:text-foreground transition-colors">
+                Researchers
+              </Link>
+              <Link href="/messages" className="text-muted-foreground hover:text-foreground transition-colors">
+                Messages
+              </Link>
+              <Link href="/repository" className="text-primary font-medium">
+                Repository
+              </Link>
+              <Link href="/jobs" className="text-muted-foreground hover:text-foreground transition-colors">
+                Jobs
+              </Link>
+            </nav>
+            <Button asChild>
+              <Link href="/repository/submit">
+                <Upload className="w-4 h-4 mr-2" />
+                Submit Paper
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </header> */}
 
          <div className='container mx-auto px-4 py-8'>
             {/* Page Header */}
             <div className='mb-8'>
                <h1 className='text-3xl font-bold mb-2'>
-                  Research Hub Repository
+                  Academic Nexus Repository
                </h1>
                <p className='text-muted-foreground'>
                   Open access preprint repository with community peer review and
@@ -449,28 +434,127 @@ export default function RepositoryPage() {
                   </Card>
                </TabsContent>
 
-               <TabsContent value='my-papers' className='space-y-4'>
-                  <Card>
-                     <CardHeader>
-                        <CardTitle>My Submissions</CardTitle>
-                        <CardDescription>
-                           Papers you have authored or co-authored
-                        </CardDescription>
-                     </CardHeader>
-                     <CardContent>
-                        <div className='text-center py-8'>
-                           <FileText className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-                           <p className='text-muted-foreground mb-4'>
-                              You haven't submitted any papers yet.
-                           </p>
-                           <Button asChild>
-                              <Link href='/repository/submit'>
-                                 Submit Your First Paper
-                              </Link>
+               <TabsContent value='my-papers' className='space-y-6'>
+                  <div className='flex gap-2 flex-wrap'>
+                     {["All", "Draft", "Under Review", "Published"].map(
+                        (filter) => (
+                           <Button key={filter} variant='outline' size='sm'>
+                              {filter}
                            </Button>
-                        </div>
-                     </CardContent>
-                  </Card>
+                        )
+                     )}
+                  </div>
+
+                  <div className='grid gap-6'>
+                     {[
+                        {
+                           id: "my-paper-1",
+                           title: "My Research on Advanced Algorithms",
+                           status: "published",
+                           version: "v1",
+                           views: 234,
+                           downloads: 89,
+                           reviews: 5,
+                           lastUpdated: "2024-01-15",
+                        },
+                        {
+                           id: "my-paper-2",
+                           title: "A Draft on Novel Approaches",
+                           status: "draft",
+                           version: "v1",
+                           views: 0,
+                           downloads: 0,
+                           reviews: 0,
+                           lastUpdated: "2024-01-10",
+                        },
+                     ].map((paper) => (
+                        <Card
+                           key={paper.id}
+                           className='hover:shadow-lg transition-shadow'
+                        >
+                           <CardHeader>
+                              <div className='flex items-start justify-between'>
+                                 <div className='flex-1'>
+                                    <div className='flex items-center gap-3 mb-2'>
+                                       <CardTitle>
+                                          <Link
+                                             href={`/repository/${paper.id}`}
+                                             className='hover:text-primary'
+                                          >
+                                             {paper.title}
+                                          </Link>
+                                       </CardTitle>
+                                       <Badge
+                                          className={
+                                             paper.status === "published"
+                                                ? "bg-green-100 text-green-800"
+                                                : "bg-yellow-100 text-yellow-800"
+                                          }
+                                       >
+                                          {paper.status
+                                             .charAt(0)
+                                             .toUpperCase() +
+                                             paper.status.slice(1)}
+                                       </Badge>
+                                       <Badge variant='outline'>
+                                          {paper.version}
+                                       </Badge>
+                                    </div>
+                                 </div>
+                              </div>
+                           </CardHeader>
+                           <CardContent>
+                              <div className='flex items-center justify-between mb-4 text-sm text-muted-foreground'>
+                                 <span>Last updated: {paper.lastUpdated}</span>
+                                 <div className='flex items-center gap-4'>
+                                    <span>{paper.views} views</span>
+                                    <span>{paper.downloads} downloads</span>
+                                    <span>{paper.reviews} reviews</span>
+                                 </div>
+                              </div>
+                              <div className='flex items-center justify-between'>
+                                 <div className='flex items-center gap-2'>
+                                    <Button variant='outline' size='sm' asChild>
+                                       <Link
+                                          href={`/repository/${paper.id}/edit`}
+                                       >
+                                          Edit
+                                       </Link>
+                                    </Button>
+                                    <Button variant='outline' size='sm'>
+                                       View
+                                    </Button>
+                                    <Button variant='outline' size='sm'>
+                                       Upload Version
+                                    </Button>
+                                 </div>
+                                 <Button variant='ghost' size='sm'>
+                                    More
+                                 </Button>
+                              </div>
+                           </CardContent>
+                        </Card>
+                     ))}
+
+                     {/* Empty state fallback */}
+                     {false && (
+                        <Card>
+                           <CardHeader>
+                              <CardTitle>No Papers Yet</CardTitle>
+                           </CardHeader>
+                           <CardContent>
+                              <p className='text-muted-foreground mb-4'>
+                                 You haven't submitted any papers yet.
+                              </p>
+                              <Button asChild>
+                                 <Link href='/repository/submit'>
+                                    Submit Your First Paper
+                                 </Link>
+                              </Button>
+                           </CardContent>
+                        </Card>
+                     )}
+                  </div>
                </TabsContent>
             </Tabs>
          </div>

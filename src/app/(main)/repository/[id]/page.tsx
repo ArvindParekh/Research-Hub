@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
    Card,
@@ -11,11 +14,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import {
+   Dialog,
+   DialogContent,
+   DialogDescription,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+} from "@/components/ui/dialog";
 import {
    BookOpen,
    Download,
    Eye,
-   MessageSquare,
    Star,
    Calendar,
    GitBranch,
@@ -25,8 +36,10 @@ import {
    ThumbsDown,
    ExternalLink,
    FileText,
+   Upload,
 } from "lucide-react";
 import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // This would normally come from a database
 const getPaper = (id: string) => {
@@ -76,13 +89,17 @@ const getPaper = (id: string) => {
    return papers[id as keyof typeof papers];
 };
 
-export default async function PaperPage({
-   params,
-}: {
-   params: Promise<{ id: string }>;
-}) {
-   const { id } = await params;
-   const paper = getPaper(id);
+export default function PaperPage({ params }: { params: { id: string } }) {
+   const [userVotes, setUserVotes] = useState<{
+      [key: number]: "helpful" | "not-helpful" | null;
+   }>({});
+   const [isAddVersionOpen, setIsAddVersionOpen] = useState(false);
+   const [newVersionData, setNewVersionData] = useState({
+      changes: "",
+      file: "",
+   });
+
+   const paper = getPaper(params.id);
 
    if (!paper) {
       return <div>Paper not found</div>;
@@ -124,6 +141,16 @@ export default async function PaperPage({
       },
    ];
 
+   const handleVote = (
+      reviewId: number,
+      voteType: "helpful" | "not-helpful"
+   ) => {
+      setUserVotes((prev) => ({
+         ...prev,
+         [reviewId]: prev[reviewId] === voteType ? null : voteType,
+      }));
+   };
+
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
@@ -135,7 +162,7 @@ export default async function PaperPage({
                         <BookOpen className='w-5 h-5 text-primary-foreground' />
                      </div>
                      <h1 className='text-xl font-bold text-foreground'>
-                        Research Hub
+                        Academic Nexus
                      </h1>
                   </Link>
                   <nav className='hidden md:flex items-center gap-6'>
@@ -442,12 +469,55 @@ export default async function PaperPage({
                               </p>
                               <div className='flex items-center justify-between'>
                                  <div className='flex items-center gap-4'>
-                                    <Button variant='ghost' size='sm'>
-                                       <ThumbsUp className='w-4 h-4 mr-1' />
+                                    <Button
+                                       variant={
+                                          userVotes[review.id] === "helpful"
+                                             ? "default"
+                                             : "ghost"
+                                       }
+                                       size='sm'
+                                       onClick={() =>
+                                          handleVote(review.id, "helpful")
+                                       }
+                                       className={`${
+                                          userVotes[review.id] === "helpful"
+                                             ? "bg-green-600 hover:bg-green-700 text-white"
+                                             : "hover:bg-green-50 hover:text-green-700"
+                                       }`}
+                                    >
+                                       <ThumbsUp
+                                          className={`w-4 h-4 mr-1 ${
+                                             userVotes[review.id] === "helpful"
+                                                ? "fill-current"
+                                                : ""
+                                          }`}
+                                       />
                                        Helpful ({review.helpful})
                                     </Button>
-                                    <Button variant='ghost' size='sm'>
-                                       <ThumbsDown className='w-4 h-4 mr-1' />
+                                    <Button
+                                       variant={
+                                          userVotes[review.id] === "not-helpful"
+                                             ? "default"
+                                             : "ghost"
+                                       }
+                                       size='sm'
+                                       onClick={() =>
+                                          handleVote(review.id, "not-helpful")
+                                       }
+                                       className={`${
+                                          userVotes[review.id] === "not-helpful"
+                                             ? "bg-red-600 hover:bg-red-700 text-white"
+                                             : "hover:bg-red-50 hover:text-red-700"
+                                       }`}
+                                    >
+                                       <ThumbsDown
+                                          className={`w-4 h-4 mr-1 ${
+                                             userVotes[review.id] ===
+                                             "not-helpful"
+                                                ? "fill-current"
+                                                : ""
+                                          }`}
+                                       />
                                        Not Helpful ({review.notHelpful})
                                     </Button>
                                  </div>
@@ -471,34 +541,57 @@ export default async function PaperPage({
                      <CardContent>
                         <div className='space-y-4'>
                            <div>
-                              <label className='text-sm font-medium mb-2 block'>
+                              <label className='text-sm font-medium mb-3 block'>
                                  Rating
                               </label>
-                              <div className='flex items-center gap-1'>
+                              <div className='flex items-center gap-2'>
                                  {[...Array(5)].map((_, i) => (
-                                    <Star
+                                    <button
                                        key={i}
-                                       className='w-6 h-6 text-gray-300 hover:text-yellow-400 cursor-pointer'
-                                    />
+                                       className='relative group p-1'
+                                       onMouseEnter={(e) => {
+                                          const btn = e.currentTarget;
+                                          btn.classList.add("scale-110");
+                                       }}
+                                       onMouseLeave={(e) => {
+                                          const btn = e.currentTarget;
+                                          btn.classList.remove("scale-110");
+                                       }}
+                                    >
+                                       <Star className='w-7 h-7 text-gray-300 hover:text-yellow-400 transition-all cursor-pointer' />
+                                    </button>
                                  ))}
                               </div>
                            </div>
+
                            <div>
                               <label className='text-sm font-medium mb-2 block'>
                                  Review Summary
                               </label>
-                              <input
-                                 placeholder='Brief summary of your review...'
-                                 className='w-full p-2 border rounded-lg bg-background'
-                              />
+                              <Input placeholder='Brief summary of your review...' />
                            </div>
+
                            <div>
                               <label className='text-sm font-medium mb-2 block'>
                                  Detailed Review
                               </label>
-                              <Textarea placeholder='Provide detailed feedback on the methodology, results, and overall contribution...' />
+                              <Textarea
+                                 placeholder='Provide detailed feedback on the methodology, results, and overall contribution...'
+                                 rows={5}
+                              />
                            </div>
-                           <Button>Submit Review</Button>
+
+                           <div className='flex items-center gap-2'>
+                              <Checkbox id='anonymous' className='rounded' />
+                              <label
+                                 htmlFor='anonymous'
+                                 className='text-sm font-medium cursor-pointer'
+                              >
+                                 Post this review anonymously
+                              </label>
+                           </div>
+
+                           <Button className='w-full'>Submit Review</Button>
                         </div>
                      </CardContent>
                   </Card>
@@ -507,13 +600,93 @@ export default async function PaperPage({
                <TabsContent value='versions' className='space-y-4'>
                   <Card>
                      <CardHeader>
-                        <CardTitle className='flex items-center gap-2'>
-                           <GitBranch className='w-5 h-5' />
-                           Version History
-                        </CardTitle>
-                        <CardDescription>
-                           Track changes and improvements across paper versions
-                        </CardDescription>
+                        <div className='flex items-center justify-between'>
+                           <div>
+                              <CardTitle className='flex items-center gap-2'>
+                                 <GitBranch className='w-5 h-5' />
+                                 Version History
+                              </CardTitle>
+                              <CardDescription>
+                                 Track changes and improvements across paper
+                                 versions
+                              </CardDescription>
+                           </div>
+                           <Dialog
+                              open={isAddVersionOpen}
+                              onOpenChange={setIsAddVersionOpen}
+                           >
+                              <DialogTrigger asChild>
+                                 <Button variant='outline' size='sm'>
+                                    + Add Version
+                                 </Button>
+                              </DialogTrigger>
+                              <DialogContent className='max-w-md'>
+                                 <DialogHeader>
+                                    <DialogTitle>Add New Version</DialogTitle>
+                                    <DialogDescription>
+                                       Upload a new version of your paper and
+                                       describe the changes
+                                    </DialogDescription>
+                                 </DialogHeader>
+                                 <div className='space-y-4'>
+                                    <div>
+                                       <label className='text-sm font-medium mb-2 block'>
+                                          Changes / Updates
+                                       </label>
+                                       <Textarea
+                                          placeholder='Describe what changed in this version...'
+                                          rows={3}
+                                          value={newVersionData.changes}
+                                          onChange={(e) =>
+                                             setNewVersionData({
+                                                ...newVersionData,
+                                                changes: e.target.value,
+                                             })
+                                          }
+                                          className='text-sm'
+                                       />
+                                    </div>
+                                    <div>
+                                       <label className='text-sm font-medium mb-2 block'>
+                                          Upload PDF File
+                                       </label>
+                                       <div className='border-2 border-dashed rounded-lg p-6 text-center hover:bg-muted/30 transition-colors cursor-pointer'>
+                                          <Upload className='w-8 h-8 text-muted-foreground mx-auto mb-2' />
+                                          <p className='text-sm font-medium mb-1'>
+                                             Click to upload or drag and drop
+                                          </p>
+                                          <p className='text-xs text-muted-foreground'>
+                                             PDF files up to 50MB
+                                          </p>
+                                       </div>
+                                    </div>
+                                    <div className='flex gap-2 pt-2'>
+                                       <Button
+                                          variant='outline'
+                                          className='flex-1 bg-transparent'
+                                          onClick={() =>
+                                             setIsAddVersionOpen(false)
+                                          }
+                                       >
+                                          Cancel
+                                       </Button>
+                                       <Button
+                                          className='flex-1'
+                                          onClick={() => {
+                                             setIsAddVersionOpen(false);
+                                             setNewVersionData({
+                                                changes: "",
+                                                file: "",
+                                             });
+                                          }}
+                                       >
+                                          Upload Version
+                                       </Button>
+                                    </div>
+                                 </div>
+                              </DialogContent>
+                           </Dialog>
+                        </div>
                      </CardHeader>
                      <CardContent>
                         <div className='space-y-4'>
@@ -559,18 +732,85 @@ export default async function PaperPage({
                <TabsContent value='citations' className='space-y-4'>
                   <Card>
                      <CardHeader>
-                        <CardTitle>Citations ({paper.citations})</CardTitle>
-                        <CardDescription>
-                           Papers that have cited this work
-                        </CardDescription>
+                        <div className='flex items-center justify-between'>
+                           <div>
+                              <CardTitle>
+                                 Citations ({paper.citations})
+                              </CardTitle>
+                              <CardDescription>
+                                 Papers that have cited this work
+                              </CardDescription>
+                           </div>
+                           <Button variant='outline' size='sm'>
+                              + Add Citation
+                           </Button>
+                        </div>
                      </CardHeader>
                      <CardContent>
-                        <div className='text-center py-8'>
-                           <FileText className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-                           <p className='text-muted-foreground'>
-                              Citation tracking will be available once the paper
-                              is published.
-                           </p>
+                        <div className='space-y-4'>
+                           {paper.citations > 0 ? (
+                              [
+                                 {
+                                    id: 1,
+                                    title: "Quantum-Enhanced Deep Learning: Bridging Theory and Practice",
+                                    authors: "Li, J., Chen, S., & Patel, R.",
+                                    date: "2024-02-10",
+                                    category: "Machine Learning",
+                                 },
+                                 {
+                                    id: 2,
+                                    title: "Neural Architecture Search: A Survey and Recent Advances",
+                                    authors:
+                                       "Kim, M., Thompson, A., & Garcia, M.",
+                                    date: "2024-01-28",
+                                    category: "Computer Vision",
+                                 },
+                                 {
+                                    id: 3,
+                                    title: "Optimization Techniques for Large-Scale Neural Networks",
+                                    authors:
+                                       "Rodriguez, M., Wang, L., & Johnson, E.",
+                                    date: "2024-01-20",
+                                    category: "Machine Learning",
+                                 },
+                              ].map((citation) => (
+                                 <div
+                                    key={citation.id}
+                                    className='flex items-start justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors'
+                                 >
+                                    <div className='flex-1'>
+                                       <h4 className='font-medium mb-1 hover:text-primary cursor-pointer'>
+                                          {citation.title}
+                                       </h4>
+                                       <p className='text-sm text-muted-foreground mb-2'>
+                                          {citation.authors}
+                                       </p>
+                                       <div className='flex items-center gap-3 text-sm'>
+                                          <Badge variant='secondary'>
+                                             {citation.category}
+                                          </Badge>
+                                          <span className='text-muted-foreground'>
+                                             {citation.date}
+                                          </span>
+                                       </div>
+                                    </div>
+                                    <Button
+                                       variant='ghost'
+                                       size='sm'
+                                       className='ml-4'
+                                    >
+                                       View
+                                    </Button>
+                                 </div>
+                              ))
+                           ) : (
+                              <div className='text-center py-8'>
+                                 <FileText className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+                                 <p className='text-muted-foreground'>
+                                    No citations yet
+                                 </p>
+                              </div>
+                           )}
                         </div>
                      </CardContent>
                   </Card>
@@ -579,21 +819,71 @@ export default async function PaperPage({
                <TabsContent value='discussion' className='space-y-4'>
                   <Card>
                      <CardHeader>
-                        <CardTitle>Community Discussion</CardTitle>
+                        <CardTitle>Start a Discussion</CardTitle>
                         <CardDescription>
-                           Join the conversation about this research
+                           Ask questions or discuss this paper with the
+                           community
                         </CardDescription>
                      </CardHeader>
-                     <CardContent>
-                        <div className='text-center py-8'>
-                           <MessageSquare className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-                           <p className='text-muted-foreground mb-4'>
-                              Start a discussion about this paper.
-                           </p>
-                           <Button>Start Discussion</Button>
-                        </div>
+                     <CardContent className='space-y-3'>
+                        <Input placeholder='Discussion title...' />
+                        <Textarea
+                           placeholder='What would you like to discuss?'
+                           rows={4}
+                        />
+                        <Button>Post Discussion</Button>
                      </CardContent>
                   </Card>
+
+                  {/* Discussion threads */}
+                  <div className='space-y-4'>
+                     {[
+                        {
+                           id: 1,
+                           title: "How does this compare to classical NAS methods?",
+                           author: "Dr. Emily Johnson",
+                           date: "2024-01-17",
+                           content:
+                              "The quantum-inspired approach is interesting, but I'd like to see a more detailed comparison with classical NAS methods. Has the author considered benchmarking against AutoML frameworks?",
+                           replies: 3,
+                        },
+                        {
+                           id: 2,
+                           title: "Reproducibility concerns",
+                           author: "Alex Kim",
+                           date: "2024-01-16",
+                           content:
+                              "Are the authors planning to release the code and datasets? This would greatly help in reproducing the results and validating the claims.",
+                           replies: 1,
+                        },
+                     ].map((thread) => (
+                        <Card key={thread.id}>
+                           <CardHeader>
+                              <div className='flex items-start justify-between'>
+                                 <div className='flex-1'>
+                                    <CardTitle className='text-lg mb-1'>
+                                       {thread.title}
+                                    </CardTitle>
+                                    <p className='text-sm text-muted-foreground'>
+                                       {thread.author} • {thread.date}
+                                    </p>
+                                 </div>
+                                 <Badge variant='outline'>
+                                    {thread.replies} replies
+                                 </Badge>
+                              </div>
+                           </CardHeader>
+                           <CardContent>
+                              <p className='text-muted-foreground'>
+                                 {thread.content}
+                              </p>
+                              <Button variant='ghost' size='sm'>
+                                 Reply • View Thread
+                              </Button>
+                           </CardContent>
+                        </Card>
+                     ))}
+                  </div>
                </TabsContent>
             </Tabs>
          </div>
