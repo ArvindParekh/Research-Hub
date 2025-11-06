@@ -1,5 +1,6 @@
 export type NavbarPage =
    | "home"
+   | "feed"
    | "profiles"
    | "groups"
    | "repository"

@@ -40,6 +40,17 @@ export const navbarConfig: Record<NavbarPage, NavbarConfig> = {
       ],
       buttons: [],
    },
+   feed: {
+      links: [
+         { href: "/feed", label: "Feed" },
+         { href: "/profiles", label: "Researchers" },
+         { href: "/groups", label: "Groups" },
+         { href: "/repository", label: "Repository" },
+         { href: "/jobs", label: "Jobs" },
+         { href: "/events", label: "Events" },
+      ],
+      buttons: [],
+   },
    profiles: {
       links: [
          { href: "/profiles", label: "Researchers" },

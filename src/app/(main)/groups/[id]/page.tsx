@@ -3,14 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-   BookOpen,
    MapPin,
    Users,
    ArrowLeft,
-   Bell,
    Settings,
 } from "lucide-react";
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 
 const getGroup = (id: string) => {
    const groups: Record<string, any> = {
@@ -93,39 +92,7 @@ export default async function GroupDetailPage({
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b border-border bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Academic Nexus
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-6 text-sm'>
-                     <Link
-                        href='/profiles'
-                        className='text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Researchers
-                     </Link>
-                     <Link href='/groups' className='text-primary font-medium'>
-                        Groups
-                     </Link>
-                  </nav>
-                  <div className='flex items-center gap-2'>
-                     <Button variant='ghost' size='sm'>
-                        <Bell className='w-4 h-4' />
-                     </Button>
-                     <Button variant='outline' size='sm'>
-                        Share
-                     </Button>
-                  </div>
-               </div>
-            </div>
-         </header>
+         <Navbar page='groups' />
 
          <div className='container mx-auto px-4 py-8'>
             {/* Back Button */}

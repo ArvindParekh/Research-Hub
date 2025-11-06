@@ -59,7 +59,7 @@
 			"props": {
 				"color": "black",
 				"size": "m",
-				"w": 273.96875,
+				"w": 396.40625,
 				"font": "draw",
 				"textAlign": "start",
 				"autoSize": true,
@@ -106,6 +106,45 @@
 													"text": "setup db schemas"
 												}
 											]
+										},
+										{
+											"type": "bulletList",
+											"content": [
+												{
+													"type": "listItem",
+													"content": [
+														{
+															"type": "paragraph",
+															"attrs": {
+																"dir": "auto"
+															},
+															"content": [
+																{
+																	"type": "text",
+																	"text": "setup schemas for jobs"
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "listItem",
+													"content": [
+														{
+															"type": "paragraph",
+															"attrs": {
+																"dir": "auto"
+															},
+															"content": [
+																{
+																	"type": "text",
+																	"text": "setup schemas for feed"
+																}
+															]
+														}
+													]
+												}
+											]
 										}
 									]
 								}
@@ -121,9 +160,9 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": 743.484375,
-			"y": -96.09375,
-			"lastActivityTimestamp": 1762363966532,
+			"x": 402.484375,
+			"y": -203.09375,
+			"lastActivityTimestamp": 1762460307362,
 			"meta": {}
 		},
 		{
@@ -144,7 +183,7 @@
 				"x": 0,
 				"y": 0,
 				"w": 1655,
-				"h": 929
+				"h": 983
 			},
 			"insets": [
 				false,
@@ -188,7 +227,7 @@
 		},
 		{
 			"x": 334.515625,
-			"y": 498.09375,
+			"y": 525.09375,
 			"z": 1,
 			"meta": {},
 			"id": "camera:page:page",

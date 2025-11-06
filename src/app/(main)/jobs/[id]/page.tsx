@@ -9,7 +9,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-   BookOpen,
    MapPin,
    Calendar,
    DollarSign,
@@ -23,6 +22,7 @@ import {
    AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
+import Navbar from "@/components/navbar";
 
 // This would normally come from a database
 const getJob = (id: string) => {
@@ -114,25 +114,7 @@ export default async function JobDetailsPage({
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
-         <header className='border-b bg-card'>
-            <div className='container mx-auto px-4 py-4'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-2'>
-                     <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
-                        <BookOpen className='w-5 h-5 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-xl font-bold text-foreground'>
-                        Research Hub
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-6'>
-                     <Link href='/jobs' className='text-primary font-medium'>
-                        Jobs
-                     </Link>
-                  </nav>
-               </div>
-            </div>
-         </header>
+         <Navbar page='jobs' />
 
          <div className='container mx-auto px-4 py-8'>
             {/* Job Header */}

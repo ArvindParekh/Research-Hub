@@ -4,8 +4,7 @@ import { useState } from "react";
 import { CreatePostCard } from "@/components/feed/create-post-card";
 import { PostCard } from "@/components/feed/post-card";
 import { TrendingSidebar } from "@/components/feed/trending-sidebar";
-import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import NavbarClient from "@/components/navbar-client";
 
 export default function FeedPage() {
    const [posts, setPosts] = useState([
@@ -80,41 +79,10 @@ export default function FeedPage() {
 
    return (
       <div className='min-h-screen bg-background'>
-         {/* Sticky Header */}
-         <header className='sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm'>
-            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between'>
-               <Link href='/' className='flex items-center gap-2.5'>
-                  <div className='w-8 h-8 bg-primary rounded-md flex items-center justify-center'>
-                     <BookOpen className='w-4 h-4 text-primary-foreground' />
-                  </div>
-                  <span className='font-semibold text-foreground'>
-                     Academic Nexus
-                  </span>
-               </Link>
-               <nav className='hidden md:flex items-center gap-8'>
-                  {[
-                     { label: "Feed", href: "/feed", active: true },
-                     { label: "Researchers", href: "/profiles" },
-                     { label: "Groups", href: "/groups" },
-                     { label: "Repository", href: "/repository" },
-                     { label: "Jobs", href: "/jobs" },
-                     { label: "Events", href: "/events" },
-                  ].map((item) => (
-                     <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`text-sm font-medium transition-colors ${
-                           item.active
-                              ? "text-foreground"
-                              : "text-muted-foreground hover:text-foreground"
-                        }`}
-                     >
-                        {item.label}
-                     </Link>
-                  ))}
-               </nav>
-            </div>
-         </header>
+         {/* Header */}
+         <div className='sticky top-0 z-50 bg-background/95 backdrop-blur-sm'>
+            <NavbarClient page='feed' />
+         </div>
 
          {/* Main Content */}
          <main className='max-w-7xl mx-auto'>
