@@ -24,15 +24,16 @@ export default async function Navbar({ page = "home" }: { page?: NavbarPage }) {
                   </h1>
                </Link>
                <nav className='hidden md:flex items-center gap-8'>
-                  {config.links.map((link) => (
-                     <Link
-                        key={link.href}
-                        href={link.href}
-                        className={getActiveLinkClassName(link.href, page)}
-                     >
-                        {link.label}
-                     </Link>
-                  ))}
+                  {loggedIn &&
+                     config.links.map((link) => (
+                        <Link
+                           key={link.href}
+                           href={link.href}
+                           className={getActiveLinkClassName(link.href, page)}
+                        >
+                           {link.label}
+                        </Link>
+                     ))}
                </nav>
                <div className='flex items-center gap-3'>
                   {config.buttons.map((button) => {
