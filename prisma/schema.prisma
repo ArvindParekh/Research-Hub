@@ -51,6 +51,12 @@ model User {
   groupMemberships GroupMember[]
   groupAnnouncements GroupAnnouncement[]
   groupProjectMembers GroupProjectMember[]
+  
+  // Repository relationships
+  repositoryPapers RepositoryPaperAuthor[]
+  paperReviews PaperReview[]
+  paperBookmarks PaperBookmark[]
+  reviewHelpfulVotes ReviewHelpfulVote[]
 }
 
 model Connection {
@@ -91,6 +97,10 @@ model Publication {
 
   citations_made Publication[] @relation("Citations")
   citations_received Publication[] @relation("Citations")
+  
+  // Repository link
+  repositoryPaper RepositoryPaper? @relation("PublicationFromRepository") // if this publication came from a repository preprint
+  paperCitationsReceived PaperCitation[] // citations from repository papers
 }
 
 model ResearchInterest {
@@ -537,4 +547,220 @@ model GroupAnnouncement {
   @@index([groupId])
   @@index([userId])
   @@index([createdAt])
+}
+
+// ============================================
+// Repository Models (pre-print repository)
+// ============================================
+
+model RepositoryPaper {
+  id String @id @default(uuid())
+  
+  title String
+  abstract String? @db.Text
+  
+  categoryId String?
+  status PaperStatus @default(Draft)
+  
+  currentVersion String? // like v1, v2
+  currentPdfUrl String? // (can be derived from version)
+  
+  // aggregated metrics
+  views Int @default(0)
+  downloads Int @default(0)
+  citations Int @default(0)
+  reviewCount Int @default(0)
+  averageRating Float? // from 1 to 5
+  
+  // link to publication if published
+  publicationId String? @unique
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  submittedAt DateTime? // when first submitted (status changed from Draft to UnderReview)
+  
+  // relations
+  category PaperCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  authors RepositoryPaperAuthor[]
+  versions PaperVersion[]
+  reviews PaperReview[]
+  keywords PaperKeyword[]
+  bookmarks PaperBookmark[]
+  citationsMade PaperCitation[] @relation("CitationsFrom")
+  citationsReceived PaperCitation[] @relation("CitationsTo")
+  publication Publication? @relation("PublicationFromRepository", fields: [publicationId], references: [id], onDelete: SetNull)
+  
+  @@index([categoryId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([submittedAt])
+  @@index([averageRating])
+}
+
+enum PaperStatus {
+  Draft
+  UnderReview
+  Published
+  Withdrawn
+}
+
+model RepositoryPaperAuthor {
+  id String @id @default(uuid())
+  
+  paperId String
+  userId String
+  
+  order Int // useful for author ordering
+  affiliation String? // can override user's default affiliation
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  paper RepositoryPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([paperId, userId])
+  @@index([paperId])
+  @@index([userId])
+  @@index([order])
+}
+
+model PaperVersion {
+  id String @id @default(uuid())
+  
+  paperId String
+  version String // like v1, v2
+  
+  changelog String? @db.Text // description of changes
+  fileUrl String? // pdf file
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  paper RepositoryPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  
+  @@unique([paperId, version])
+  @@index([paperId])
+  @@index([createdAt])
+}
+
+model PaperReview {
+  id String @id @default(uuid())
+  
+  paperId String
+  userId String?
+  
+  // reviewer info (can be anonymous)
+  reviewerName String? // if not a user, or anonymous
+  isAnonymous Boolean @default(false)
+  
+  rating Int // 1-5
+  summary String? // brief summary
+  content String? @db.Text // detailed review
+  
+  helpfulCount Int @default(0) // aggregated count, updated via ReviewHelpfulVote
+  notHelpfulCount Int @default(0) // aggregated count, updated via ReviewHelpfulVote
+  
+  // review type
+  reviewType ReviewType @default(Community)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  paper RepositoryPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  helpfulVotes ReviewHelpfulVote[]
+  
+  @@index([paperId])
+  @@index([userId])
+  @@index([rating])
+  @@index([reviewType])
+  @@index([createdAt])
+}
+
+enum ReviewType {
+  Peer
+  Community
+}
+
+model PaperCategory {
+  id String @id @default(uuid())
+  
+  name String
+  slug String? @unique
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  papers RepositoryPaper[]
+}
+
+model PaperKeyword {
+  id String @id @default(uuid())
+  
+  keyword String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  papers RepositoryPaper[]
+}
+
+model PaperBookmark {
+  id String @id @default(uuid())
+  
+  paperId String
+  userId String
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  paper RepositoryPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([paperId, userId])
+  @@index([paperId])
+  @@index([userId])
+}
+
+model ReviewHelpfulVote {
+  id String @id @default(uuid())
+  
+  reviewId String
+  userId String
+  
+  isHelpful Boolean 
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  review PaperReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+  @@index([userId])
+}
+
+model PaperCitation {
+  id String @id @default(uuid())
+  
+  fromPaperId String // paper that cites
+  toPaperId String? // paper being cited (repository paper)
+  toPublicationId String? // or published paper being cited
+  
+  // application logic must ensure exactly one of toPaperId or toPublicationId is set
+  createdAt DateTime @default(now())
+  
+  // relations
+  fromPaper RepositoryPaper @relation("CitationsFrom", fields: [fromPaperId], references: [id], onDelete: Cascade)
+  toPaper RepositoryPaper? @relation("CitationsTo", fields: [toPaperId], references: [id], onDelete: Cascade)
+  toPublication Publication? @relation(fields: [toPublicationId], references: [id], onDelete: Cascade)
+  
+  @@unique([fromPaperId, toPaperId])
+  @@unique([fromPaperId, toPublicationId])
+  @@index([fromPaperId])
+  @@index([toPaperId])
+  @@index([toPublicationId])
 }
