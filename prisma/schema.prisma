@@ -62,6 +62,11 @@ model User {
   directConversations ConversationParticipant[]
   sentMessages Message[]
   channelMemberships ChannelMember[]
+  
+  // Job relationships
+  postedJobs Job[] @relation("JobPoster")
+  jobApplications JobApplication[]
+  bookmarkedJobs JobBookmark[]
 }
 
 model Connection {
@@ -772,6 +777,192 @@ model PaperCitation {
 }
 
 // ============================================
+// Jobs Models
+// ============================================
+
+model Job {
+  id String @id @default(uuid())
+  
+  title String
+  description String? @db.Text
+  requirements String? @db.Text
+  responsibilities String? @db.Text
+  qualifications String? @db.Text
+  
+  // organization info
+  organizationName String
+  department String?
+  organizationLogo String?
+  organizationWebsite String?
+  
+  // location
+  location String? // simple city, country for now
+  workMode WorkMode?
+  
+  // job details
+  type JobType
+  field String? // research field
+  
+  // compensation
+  salaryMin Decimal?
+  salaryMax Decimal?
+  currency String? // eg USD, EUR, etc.
+  salaryPeriod SalaryPeriod? // Annual, Monthly, Hourly
+  
+  // dates
+  applicationDeadline DateTime?
+  startDate DateTime?
+  
+  // posted by
+  posterId String?
+  contactEmail String?
+  applicationUrl String? // link to external application
+  
+  // status
+  status JobStatus @default(Open)
+  isFeatured Boolean @default(false)
+  
+  // metadata
+  views Int @default(0)
+  applicationCount Int @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  poster User? @relation("JobPoster", fields: [posterId], references: [id], onDelete: SetNull)
+  categories JobCategory[]
+  applications JobApplication[]
+  bookmarks JobBookmark[]
+  
+  @@index([type])
+  @@index([status])
+  @@index([field])
+  @@index([location])
+  @@index([workMode])
+  @@index([posterId])
+  @@index([applicationDeadline])
+  @@index([createdAt])
+  @@index([isFeatured])
+}
+
+enum WorkMode {
+  Remote
+  Hybrid
+  Onsite
+}
+
+enum JobType {
+  PhD
+  Postdoc
+  Faculty
+  ResearchScientist
+  ResearchAssistant
+  ResearchEngineer
+  LabManager
+  Internship
+  Visiting
+  Other
+}
+
+enum JobStatus {
+  Open
+  Closed
+  Filled
+  Expired
+}
+
+enum SalaryPeriod {
+  Annual
+  Monthly
+  Hourly
+}
+
+model JobCategory {
+  id String @id @default(uuid())
+  
+  name String
+  slug String? @unique
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  jobs Job[]
+}
+
+model JobApplication {
+  id String @id @default(uuid())
+  
+  jobId String
+  userId String
+  
+  status ApplicationStatus @default(Submitted)
+  
+  // application materials
+  coverLetter String? @db.Text
+  resumeUrl String?
+  additionalDocuments String[] // array of URLs to additional files
+  
+  // contact info (can override user profile)
+  contactEmail String?
+  contactPhone String?
+  
+  // additional info
+  availableFrom DateTime? // when the candidate can start
+  notes String? @db.Text
+  
+  employerNotes String? @db.Text 
+  
+  submittedAt DateTime @default(now())
+  reviewedAt DateTime?
+  respondedAt DateTime? // when the status changed from submitted
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([jobId, userId])
+  @@index([jobId])
+  @@index([userId])
+  @@index([status])
+  @@index([submittedAt])
+}
+
+enum ApplicationStatus {
+  Submitted
+  UnderReview
+  Shortlisted
+  Interviewing
+  Offered
+  Accepted
+  Rejected
+  Withdrawn
+}
+
+model JobBookmark {
+  id String @id @default(uuid())
+  
+  jobId String
+  userId String
+  
+  notes String? // personal notes about why the user saved
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([jobId, userId])
+  @@index([jobId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ============================================
 // Messaging Models
 // ============================================
 
@@ -879,7 +1070,7 @@ model Message {
   content String @db.Text
   
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt // if updatedAt > createdAt, message was edited
+  updatedAt DateTime @updatedAt // if updatedAt > createdAt, isEdited = true
   
   // relations
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
@@ -890,5 +1081,5 @@ model Message {
   @@index([createdAt])
 }
 
-// note: if we need per-message read receipts for DMs later, we can j add a new MessageRead model.
+// note: if we do need per-message read receipts for DMs later, we can j add a new MessageRead model.
 // for now, using lastReadAt on ConversationParticipant/ChannelMember for unread counts
