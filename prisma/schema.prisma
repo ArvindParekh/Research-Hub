@@ -67,6 +67,15 @@ model User {
   postedJobs Job[] @relation("JobPoster")
   jobApplications JobApplication[]
   bookmarkedJobs JobBookmark[]
+  
+  // Feed/Post relationships
+  posts Post[] @relation("PostAuthor")
+  postReactions PostReaction[]
+  postComments PostComment[]
+  commentReactions CommentReaction[]
+  postBookmarks PostBookmark[]
+  postShares PostShare[]
+  mentionedInPosts PostMention[]
 }
 
 model Connection {
@@ -111,6 +120,9 @@ model Publication {
   // Repository link
   repositoryPaper RepositoryPaper? @relation("PublicationFromRepository") // if this publication came from a repository preprint
   paperCitationsReceived PaperCitation[] // citations from repository papers
+  
+  // Feed relationship
+  sharedInPosts Post[]
 }
 
 model ResearchInterest {
@@ -171,6 +183,7 @@ model Event {
   registrations EventRegistration[]
   reviews EventReview[]
   bookmarks User[] @relation("EventBookmarks")
+  sharedInPosts Post[]
   
   @@index([type])
   @@index([format])
@@ -600,6 +613,7 @@ model RepositoryPaper {
   citationsMade PaperCitation[] @relation("CitationsFrom")
   citationsReceived PaperCitation[] @relation("CitationsTo")
   publication Publication? @relation("PublicationFromRepository", fields: [publicationId], references: [id], onDelete: SetNull)
+  sharedInPosts Post[]
   
   @@index([categoryId])
   @@index([status])
@@ -834,6 +848,7 @@ model Job {
   categories JobCategory[]
   applications JobApplication[]
   bookmarks JobBookmark[]
+  sharedInPosts Post[]
   
   @@index([type])
   @@index([status])
@@ -960,6 +975,290 @@ model JobBookmark {
   @@index([jobId])
   @@index([userId])
   @@index([createdAt])
+}
+
+// ============================================
+// Feed/Post Models
+// ============================================
+
+model Post {
+  id String @id @default(uuid())
+  
+  authorId String
+  content String? @db.Text
+  
+  // post type and category
+  type PostType @default(Text)
+  visibility PostVisibility @default(Public)
+  
+  // rich content references (when sharing existing content)
+  sharedPublicationId String?
+  sharedEventId String?
+  sharedJobId String?
+  sharedPaperId String?
+  
+  // for repost/quote functionality
+  originalPostId String? // if this is a repost/quote
+  isQuote Boolean @default(false) // true if adding own content to repost
+  
+  // aggregated engagement metrics
+  reactionCount Int @default(0)
+  commentCount Int @default(0)
+  shareCount Int @default(0)
+  bookmarkCount Int @default(0)
+  
+  // for moderation
+  isPinned Boolean @default(false)
+  isEdited Boolean @default(false)
+  deletedAt DateTime? // soft delete
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  author User @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  sharedPublication Publication? @relation(fields: [sharedPublicationId], references: [id], onDelete: SetNull)
+  sharedEvent Event? @relation(fields: [sharedEventId], references: [id], onDelete: SetNull)
+  sharedJob Job? @relation(fields: [sharedJobId], references: [id], onDelete: SetNull)
+  sharedPaper RepositoryPaper? @relation(fields: [sharedPaperId], references: [id], onDelete: SetNull)
+  originalPost Post? @relation("PostReposts", fields: [originalPostId], references: [id], onDelete: SetNull)
+  reposts Post[] @relation("PostReposts")
+  
+  reactions PostReaction[]
+  comments PostComment[]
+  bookmarks PostBookmark[]
+  shares PostShare[]
+  mentions PostMention[]
+  hashtags PostHashtag[]
+  attachments PostAttachment[]
+  
+  @@index([authorId])
+  @@index([type])
+  @@index([visibility])
+  @@index([createdAt])
+  @@index([isPinned])
+  @@index([deletedAt])
+  @@index([originalPostId])
+}
+
+enum PostType {
+  Text
+  Image
+  Link
+  Publication
+  Event
+  Job
+  Paper
+  Poll // for future polls, if needed
+}
+
+enum PostVisibility {
+  Public
+  Connections
+  Private // only visible to author, might be overkill, but keeping for now
+}
+
+model PostReaction {
+  id String @id @default(uuid())
+  
+  postId String
+  userId String
+  
+  type ReactionType @default(Like)
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, userId]) // one reaction per user per post
+  @@index([postId])
+  @@index([userId])
+  @@index([type])
+}
+
+enum ReactionType {
+  Like
+  Celebrate
+  Insightful
+  Support
+}
+
+model PostComment {
+  id String @id @default(uuid())
+  
+  postId String
+  userId String
+  
+  content String @db.Text
+  
+  // for nested comments (replies)
+  parentCommentId String? // if this is a reply to another comment
+  
+  // aggregated engagement metrics
+  reactionCount Int @default(0)
+  replyCount Int @default(0)
+  
+  isEdited Boolean @default(false)
+  deletedAt DateTime? // soft delete
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentComment PostComment? @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies PostComment[] @relation("CommentReplies")
+  reactions CommentReaction[]
+  
+  @@index([postId])
+  @@index([userId])
+  @@index([parentCommentId])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+model CommentReaction {
+  id String @id @default(uuid())
+  
+  commentId String
+  userId String
+  
+  type ReactionType @default(Like)
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  comment PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@index([userId])
+}
+
+model PostMention {
+  id String @id @default(uuid())
+  
+  postId String
+  userId String // user being mentioned
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+}
+
+model PostHashtag {
+  id String @id @default(uuid())
+  
+  name String // without the # symbol
+  slug String @unique
+  
+  // trending metrics
+  postCount Int @default(0)
+  lastUsedAt DateTime @default(now())
+  
+  createdAt DateTime @default(now())
+  
+  posts Post[]
+  
+  @@index([slug])
+  @@index([postCount])
+  @@index([lastUsedAt])
+}
+
+model PostAttachment {
+  id String @id @default(uuid())
+  
+  postId String
+  
+  type AttachmentType
+  url String // file URL
+  fileName String?
+  fileSize Int? // in bytes
+  mimeType String?
+  
+  // for images
+  width Int?
+  height Int?
+  altText String?
+  
+  // for links
+  linkTitle String?
+  linkDescription String?
+  linkImage String? // og:image
+  
+  order Int @default(0) // ??: for multiple attachments, maybe not needed?
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@index([postId])
+  @@index([type])
+}
+
+enum AttachmentType {
+  Image
+  Video
+  Document
+  Link
+}
+
+model PostBookmark {
+  id String @id @default(uuid())
+  
+  postId String
+  userId String
+  
+  notes String? // user's personal notes about why they saved
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model PostShare {
+  id String @id @default(uuid())
+  
+  postId String
+  userId String // user who shared
+  
+  // share context
+  sharedWith ShareTarget? // where it was shared
+  comment String? // optional comment when sharing
+  
+  createdAt DateTime @default(now())
+  
+  // relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([postId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum ShareTarget {
+  Feed // (creates new post)
+  Message 
+  External
 }
 
 // ============================================
