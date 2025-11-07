@@ -103,6 +103,11 @@
 											"content": [
 												{
 													"type": "text",
+													"marks": [
+														{
+															"type": "highlight"
+														}
+													],
 													"text": "setup db schemas"
 												}
 											]
@@ -121,6 +126,11 @@
 															"content": [
 																{
 																	"type": "text",
+																	"marks": [
+																		{
+																			"type": "highlight"
+																		}
+																	],
 																	"text": "setup schemas for jobs"
 																}
 															]
@@ -138,6 +148,11 @@
 															"content": [
 																{
 																	"type": "text",
+																	"marks": [
+																		{
+																			"type": "highlight"
+																		}
+																	],
 																	"text": "setup schemas for feed"
 																}
 															]
@@ -160,9 +175,9 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": 402.484375,
-			"y": -203.09375,
-			"lastActivityTimestamp": 1762460307362,
+			"x": 821.703125,
+			"y": -69.6875,
+			"lastActivityTimestamp": 1762559955043,
 			"meta": {}
 		},
 		{
@@ -226,8 +241,8 @@
 			"typeName": "instance_page_state"
 		},
 		{
-			"x": 334.515625,
-			"y": 525.09375,
+			"x": 273.296875,
+			"y": 492.6875,
 			"z": 1,
 			"meta": {},
 			"id": "camera:page:page",
