@@ -1,4 +1,3 @@
-import { ConnectionStatus } from "@/generated/prisma/client";
 import { z } from "zod";
 
 export const sendConnectionRequestSchema = z
@@ -14,9 +13,16 @@ export const respondConnectionRequestSchema = z
    })
    .strict();
 
+export const unfollowUserSchema = z
+   .object({
+      targetUserId: z.string().uuid(),
+   })
+   .strict();
+
 export type SendConnectionRequestSchema = z.infer<
    typeof sendConnectionRequestSchema
 >;
 export type RespondConnectionRequestSchema = z.infer<
    typeof respondConnectionRequestSchema
 >;
+export type UnfollowUserSchema = z.infer<typeof unfollowUserSchema>;
