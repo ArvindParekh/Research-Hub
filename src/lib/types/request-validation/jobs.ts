@@ -4,6 +4,7 @@ import {
    JobType,
    SalaryPeriod,
    JobStatus,
+   ApplicationStatus,
 } from "@/generated/prisma/client";
 
 export const createJobSchema = z
@@ -109,6 +110,42 @@ export const withdrawJobApplicationSchema = z
    })
    .strict();
 
+export const updateApplicationStatusSchema = z
+   .object({
+      applicationId: z.string().uuid(),
+      status: z.nativeEnum(ApplicationStatus),
+      employerNotes: z.string().max(2000).optional(),
+   })
+   .strict();
+
+export const getJobSchema = z
+   .object({
+      jobId: z.string().uuid(),
+   })
+   .strict();
+
+export const getMyJobsSchema = z
+   .object({
+      cursor: z.string().uuid().optional(),
+      limit: z.number().min(1).max(100).default(20),
+      type: z.enum(["posted", "applied", "all"]).default("all"),
+   })
+   .strict();
+
+export const discoverJobsSchema = z
+   .object({
+      cursor: z.string().uuid().optional(),
+      limit: z.number().min(1).max(100).default(20),
+      type: z.nativeEnum(JobType).optional(),
+      workMode: z.nativeEnum(WorkMode).optional(),
+      field: z.string().optional(),
+      location: z.string().optional(),
+      query: z.string().optional(), // search by title/organization
+      status: z.nativeEnum(JobStatus).optional(),
+      isFeatured: z.boolean().optional(),
+   })
+   .strict();
+
 export type CreateJobSchema = z.infer<typeof createJobSchema>;
 export type UpdateJobSchema = z.infer<typeof updateJobSchema>;
 export type DeleteJobSchema = z.infer<typeof deleteJobSchema>;
@@ -116,3 +153,9 @@ export type ApplyForJobSchema = z.infer<typeof applyForJobSchema>;
 export type WithdrawJobApplicationSchema = z.infer<
    typeof withdrawJobApplicationSchema
 >;
+export type UpdateApplicationStatusSchema = z.infer<
+   typeof updateApplicationStatusSchema
+>;
+export type GetJobSchema = z.infer<typeof getJobSchema>;
+export type GetMyJobsSchema = z.infer<typeof getMyJobsSchema>;
+export type DiscoverJobsSchema = z.infer<typeof discoverJobsSchema>;
