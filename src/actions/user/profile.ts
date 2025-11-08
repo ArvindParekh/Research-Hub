@@ -1,3 +1,5 @@
+"use server";
+
 import { stackServerApp } from "@/stack/server";
 import {
    updateUserProfileSchema,

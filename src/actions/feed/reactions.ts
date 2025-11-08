@@ -1,3 +1,5 @@
+"use server";
+
 import { ActionResponse } from "@/lib/types/action-response";
 import { prisma } from "@/lib/prisma";
 import {
