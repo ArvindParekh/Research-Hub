@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GroupVisibility } from "@/generated/prisma/client";
+import { GroupMemberRole, GroupVisibility } from "@/generated/prisma/client";
 
 export const createGroupSchema = z
    .object({
@@ -32,7 +32,22 @@ export const leaveGroupSchema = z
    })
    .strict();
 
+export const updateGroupMembershipSchema = z
+   .object({
+      groupId: z.string().uuid(),
+      userId: z.string().uuid(),
+      role: z.nativeEnum(GroupMemberRole).optional(),
+      isAdmin: z.boolean().optional(),
+   })
+   .strict()
+   .refine((data) => data.role !== undefined || data.isAdmin !== undefined, {
+      message: "Must provide role or isAdmin to update",
+   });
+
 export type CreateGroupSchema = z.infer<typeof createGroupSchema>;
 export type JoinGroupSchema = z.infer<typeof joinGroupSchema>;
 export type ApproveGroupMemberSchema = z.infer<typeof approveGroupMemberSchema>;
 export type LeaveGroupSchema = z.infer<typeof leaveGroupSchema>;
+export type UpdateGroupMembershipSchema = z.infer<
+   typeof updateGroupMembershipSchema
+>;
