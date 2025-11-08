@@ -11,8 +11,8 @@ import { ActionResponse } from "@/lib/types/action-response";
 export async function toggleEventBookmark(
    payload: ToggleEventBookmarkSchema
 ): Promise<ActionResponse<{ isBookmarked: boolean }>> {
-   const userId = await stackServerApp.getUser();
-   if (!userId) {
+   const stackUser = await stackServerApp.getUser();
+   if (!stackUser) {
       return {
          // return json for expected failures (validation, auth, not found, etc. throw errors for unexpected failures (db crash, network failure))
          success: false,
@@ -37,7 +37,7 @@ export async function toggleEventBookmark(
    try {
       const user = await prisma.user.findUnique({
          where: {
-            id: userId.id,
+            id: stackUser.id,
          },
          select: {
             bookmarkedEvents: {
@@ -54,7 +54,7 @@ export async function toggleEventBookmark(
       const isBookmarked = (user?.bookmarkedEvents?.length ?? 0) > 0;
 
       await prisma.user.update({
-         where: { id: userId.id },
+         where: { id: stackUser.id },
          data: {
             bookmarkedEvents: {
                [isBookmarked ? "disconnect" : "connect"]: { id: eventId },

@@ -11,8 +11,8 @@ import { stackServerApp } from "@/stack/server";
 export async function togglePostReaction(
    payload: TogglePostReactionSchema
 ): Promise<ActionResponse<{ isReacted: boolean }>> {
-   const userId = await stackServerApp.getUser();
-   if (!userId) {
+   const stackUser = await stackServerApp.getUser();
+   if (!stackUser) {
       return {
          success: false,
          message: "Unauthorized",
@@ -38,7 +38,7 @@ export async function togglePostReaction(
          where: {
             postId_userId: {
                postId,
-               userId: userId.id,
+               userId: stackUser.id,
             },
          },
       });
@@ -75,7 +75,7 @@ export async function togglePostReaction(
       await prisma.postReaction.create({
          data: {
             postId,
-            userId: userId.id,
+            userId: stackUser.id,
             type: reactionType,
          },
       });

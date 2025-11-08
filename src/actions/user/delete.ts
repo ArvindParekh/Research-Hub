@@ -5,8 +5,8 @@ import { prisma } from "@/lib/prisma";
 
 // CAUTION: potentially dangerous action
 export async function deleteUser(): Promise<ActionResponse<null>> {
-   const user = await stackServerApp.getUser();
-   if (!user) {
+   const stackUser = await stackServerApp.getUser();
+   if (!stackUser) {
       return {
          success: false,
          message: "Unauthorized",
@@ -15,11 +15,11 @@ export async function deleteUser(): Promise<ActionResponse<null>> {
    }
 
    try {
-      await user.delete(); // delete user from stack auth
+      await stackUser.delete(); // delete user from stack auth
 
       // delete user from database - onDelete: cascade will take care of deleting all user's data
       await prisma.user.delete({
-         where: { id: user.id },
+         where: { id: stackUser.id },
       });
 
       return {

@@ -12,8 +12,8 @@ import { User } from "@/generated/prisma/client";
 export async function updateUserProfile(
    payload: UpdateUserProfileSchema
 ): Promise<ActionResponse<User>> {
-   const userId = await stackServerApp.getUser();
-   if (!userId) {
+   const stackUser = await stackServerApp.getUser();
+   if (!stackUser) {
       return {
          success: false,
          message: "Unauthorized",
@@ -34,7 +34,7 @@ export async function updateUserProfile(
 
    try {
       const updatedUser = await prisma.user.update({
-         where: { id: userId.id },
+         where: { id: stackUser.id },
          data: validatedPayload.data,
       });
 
