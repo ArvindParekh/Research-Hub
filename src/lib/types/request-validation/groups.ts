@@ -17,5 +17,22 @@ export const joinGroupSchema = z
    })
    .strict();
 
+// Schema
+export const approveGroupMemberSchema = z
+   .object({
+      groupId: z.string().uuid(),
+      userId: z.string().uuid(),
+      action: z.enum(["approve", "reject"]),
+   })
+   .strict();
+
+export const leaveGroupSchema = z
+   .object({
+      groupId: z.string().uuid(),
+   })
+   .strict();
+
 export type CreateGroupSchema = z.infer<typeof createGroupSchema>;
 export type JoinGroupSchema = z.infer<typeof joinGroupSchema>;
+export type ApproveGroupMemberSchema = z.infer<typeof approveGroupMemberSchema>;
+export type LeaveGroupSchema = z.infer<typeof leaveGroupSchema>;
