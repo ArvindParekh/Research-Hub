@@ -1,0 +1,95 @@
+import { z } from "zod";
+import {
+   WorkMode,
+   JobType,
+   SalaryPeriod,
+   JobStatus,
+} from "@/generated/prisma/client";
+
+export const createJobSchema = z
+   .object({
+      title: z.string().min(1).max(255),
+      description: z.string().max(5000).optional(),
+      requirements: z.string().max(5000).optional(),
+      responsibilities: z.string().max(5000).optional(),
+      qualifications: z.string().max(5000).optional(),
+      organizationName: z.string().min(1).max(255),
+      department: z.string().max(255).optional(),
+      organizationWebsite: z.string().url().optional(),
+      location: z.string().max(255).optional(),
+      workMode: z.nativeEnum(WorkMode).optional(),
+      type: z.nativeEnum(JobType),
+      field: z.string().max(255).optional(),
+      salaryMin: z.number().optional(),
+      salaryMax: z.number().optional(),
+      currency: z.string().length(3).optional(), // usd, eur, etc.
+      salaryPeriod: z.nativeEnum(SalaryPeriod).optional(),
+      applicationDeadline: z.string().datetime().optional(),
+      startDate: z.string().datetime().optional(),
+      contactEmail: z.string().email().optional(),
+      applicationUrl: z.string().url().optional(),
+   })
+   .strict()
+   .refine(
+      (data) => {
+         if (data.salaryMin && data.salaryMax) {
+            return data.salaryMax >= data.salaryMin;
+         }
+         return true;
+      },
+      { message: "Max salary must be greater than or equal to min salary" }
+   );
+
+export const updateJobSchema = z
+   .object({
+      jobId: z.string().uuid(),
+      title: z.string().min(1).max(255).optional(),
+      description: z.string().max(5000).optional(),
+      requirements: z.string().max(5000).optional(),
+      responsibilities: z.string().max(5000).optional(),
+      qualifications: z.string().max(5000).optional(),
+      organizationName: z.string().min(1).max(255).optional(),
+      department: z.string().max(255).optional(),
+      organizationWebsite: z.string().url().optional(),
+      location: z.string().max(255).optional(),
+      workMode: z.nativeEnum(WorkMode).optional(),
+      type: z.nativeEnum(JobType).optional(),
+      field: z.string().max(255).optional(),
+      salaryMin: z.number().optional(),
+      salaryMax: z.number().optional(),
+      currency: z.string().length(3).optional(),
+      salaryPeriod: z.nativeEnum(SalaryPeriod).optional(),
+      applicationDeadline: z.string().datetime().optional(),
+      startDate: z.string().datetime().optional(),
+      contactEmail: z.string().email().optional(),
+      applicationUrl: z.string().url().optional(),
+      status: z.nativeEnum(JobStatus).optional(),
+      isFeatured: z.boolean().optional(),
+   })
+   .strict()
+   .refine(
+      (data) => {
+         const { jobId, ...updateFields } = data;
+         return Object.keys(updateFields).length > 0;
+      },
+      { message: "At least one field to update is required" }
+   )
+   .refine(
+      (data) => {
+         if (data.salaryMin && data.salaryMax) {
+            return data.salaryMax >= data.salaryMin;
+         }
+         return true;
+      },
+      { message: "Max salary must be greater than or equal to min salary" }
+   );
+
+export const deleteJobSchema = z
+   .object({
+      jobId: z.string().uuid(),
+   })
+   .strict();
+
+export type CreateJobSchema = z.infer<typeof createJobSchema>;
+export type UpdateJobSchema = z.infer<typeof updateJobSchema>;
+export type DeleteJobSchema = z.infer<typeof deleteJobSchema>;
