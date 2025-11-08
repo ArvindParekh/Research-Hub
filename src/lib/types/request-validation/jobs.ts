@@ -90,6 +90,29 @@ export const deleteJobSchema = z
    })
    .strict();
 
+export const applyForJobSchema = z
+   .object({
+      jobId: z.string().uuid(),
+      coverLetter: z.string().max(5000).optional(),
+      resumeUrl: z.string().url().optional(),
+      additionalDocuments: z.array(z.string().url()).optional(),
+      contactEmail: z.string().email().optional(),
+      contactPhone: z.string().max(50).optional(),
+      availableFrom: z.string().datetime().optional(),
+      notes: z.string().max(2000).optional(),
+   })
+   .strict();
+
+export const withdrawJobApplicationSchema = z
+   .object({
+      jobId: z.string().uuid(),
+   })
+   .strict();
+
 export type CreateJobSchema = z.infer<typeof createJobSchema>;
 export type UpdateJobSchema = z.infer<typeof updateJobSchema>;
 export type DeleteJobSchema = z.infer<typeof deleteJobSchema>;
+export type ApplyForJobSchema = z.infer<typeof applyForJobSchema>;
+export type WithdrawJobApplicationSchema = z.infer<
+   typeof withdrawJobApplicationSchema
+>;
