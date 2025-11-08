@@ -84,8 +84,16 @@ export const deletePostSchema = z
    })
    .strict();
 
+export const getUserFeedSchema = z
+   .object({
+      cursor: z.string().uuid().optional(), // cursor is the id of the last post in the previous page
+      limit: z.number().min(1).max(100).optional(), // limit denotes the number of posts to fetch
+   })
+   .strict();
+
 export type CreatePostSchema = z.infer<typeof createPostSchema>;
 export type TogglePostReactionSchema = z.infer<typeof togglePostReactionSchema>;
 export type AddPostCommentSchema = z.infer<typeof addPostCommentSchema>;
 export type TogglePostBookmarkSchema = z.infer<typeof togglePostBookmarkSchema>;
 export type DeletePostSchema = z.infer<typeof deletePostSchema>;
+export type GetUserFeedSchema = z.infer<typeof getUserFeedSchema>;
