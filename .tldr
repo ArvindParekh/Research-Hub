@@ -36,15 +36,15 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": -201.8828125,
-			"y": 225.0078125,
-			"lastActivityTimestamp": 1762562035034,
+			"x": -267.4429387520868,
+			"y": -270.2127765025041,
+			"lastActivityTimestamp": 1762576586456,
 			"meta": {}
 		},
 		{
-			"x": 530.8828125,
-			"y": 207.9921875,
-			"z": 1,
+			"x": 645.0987322621035,
+			"y": 469.6150354757929,
+			"z": 0.9929676876254614,
 			"meta": {},
 			"id": "camera:page:page",
 			"typeName": "camera"
@@ -53,9 +53,9 @@
 			"editingShapeId": null,
 			"croppingShapeId": null,
 			"selectedShapeIds": [
-				"shape:3wFq6IN6fus7sH0Y4dDLx"
+				"shape:wGnNrSDHCY8gUK9BAuonV"
 			],
-			"hoveredShapeId": "shape:3wFq6IN6fus7sH0Y4dDLx",
+			"hoveredShapeId": "shape:wGnNrSDHCY8gUK9BAuonV",
 			"erasingShapeIds": [],
 			"hintingShapeIds": [],
 			"focusedGroupId": null,
@@ -284,6 +284,142 @@
 			"typeName": "shape"
 		},
 		{
+			"x": -495.8381482157763,
+			"y": -336.805333107262,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:wGnNrSDHCY8gUK9BAuonV",
+			"type": "text",
+			"props": {
+				"color": "black",
+				"size": "m",
+				"w": 631.015625,
+				"font": "draw",
+				"textAlign": "middle",
+				"autoSize": true,
+				"scale": 1,
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "bulletList",
+							"content": [
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "code"
+														}
+													],
+													"text": "updateGroup"
+												},
+												{
+													"type": "text",
+													"text": " - edit name/description/settings"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "code"
+														}
+													],
+													"text": "deleteGroup"
+												},
+												{
+													"type": "text",
+													"text": " - remove group (leader only)"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "code"
+														}
+													],
+													"text": "transferOwnership"
+												},
+												{
+													"type": "text",
+													"text": " - change leader"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "code"
+														}
+													],
+													"text": "getPendingRequests"
+												},
+												{
+													"type": "text",
+													"text": " - admins see pending joins"
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "a4A3L",
+			"typeName": "shape"
+		},
+		{
 			"meta": {},
 			"id": "page:page",
 			"name": "Page 1",
@@ -310,7 +446,7 @@
 			"isFocusMode": false,
 			"exportBackground": true,
 			"isDebugMode": false,
-			"isToolLocked": false,
+			"isToolLocked": true,
 			"screenBounds": {
 				"x": 0,
 				"y": 0,
@@ -341,142 +477,6 @@
 			"id": "instance:instance",
 			"currentPageId": "page:page",
 			"typeName": "instance"
-		},
-		{
-			"x": -159.171875,
-			"y": -326.609375,
-			"rotation": 0,
-			"isLocked": false,
-			"opacity": 1,
-			"meta": {},
-			"id": "shape:tAa3DQ7y3wnGtSi-c8VKN",
-			"type": "text",
-			"props": {
-				"color": "black",
-				"size": "m",
-				"w": 674.75,
-				"font": "draw",
-				"textAlign": "middle",
-				"autoSize": true,
-				"scale": 1,
-				"richText": {
-					"type": "doc",
-					"content": [
-						{
-							"type": "bulletList",
-							"content": [
-								{
-									"type": "listItem",
-									"content": [
-										{
-											"type": "paragraph",
-											"attrs": {
-												"dir": "auto"
-											},
-											"content": [
-												{
-													"type": "text",
-													"marks": [
-														{
-															"type": "bold"
-														}
-													],
-													"text": "Bookmarks"
-												},
-												{
-													"type": "text",
-													"text": " (5 min) - Learn CRUD pattern"
-												}
-											]
-										}
-									]
-								},
-								{
-									"type": "listItem",
-									"content": [
-										{
-											"type": "paragraph",
-											"attrs": {
-												"dir": "auto"
-											},
-											"content": [
-												{
-													"type": "text",
-													"marks": [
-														{
-															"type": "bold"
-														}
-													],
-													"text": "Reactions"
-												},
-												{
-													"type": "text",
-													"text": " (10 min) - Add type handling"
-												}
-											]
-										}
-									]
-								},
-								{
-									"type": "listItem",
-									"content": [
-										{
-											"type": "paragraph",
-											"attrs": {
-												"dir": "auto"
-											},
-											"content": [
-												{
-													"type": "text",
-													"marks": [
-														{
-															"type": "bold"
-														}
-													],
-													"text": "User profile update"
-												},
-												{
-													"type": "text",
-													"text": " (15 min) - Learn validation"
-												}
-											]
-										}
-									]
-								},
-								{
-									"type": "listItem",
-									"content": [
-										{
-											"type": "paragraph",
-											"attrs": {
-												"dir": "auto"
-											},
-											"content": [
-												{
-													"type": "text",
-													"marks": [
-														{
-															"type": "bold"
-														}
-													],
-													"text": "Event registration"
-												},
-												{
-													"type": "text",
-													"text": " (20 min) - Handle status enums"
-												}
-											]
-										}
-									]
-								}
-							]
-						}
-					]
-				}
-			},
-			"parentId": "page:page",
-			"index": "a21Db",
-			"typeName": "shape"
 		}
 	]
 }

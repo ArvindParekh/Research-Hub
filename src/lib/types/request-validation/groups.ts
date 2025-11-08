@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { GroupMemberRole, GroupVisibility } from "@/generated/prisma/client";
+import {
+   GroupMemberRole,
+   GroupMemberStatus,
+   GroupVisibility,
+} from "@/generated/prisma/client";
 
 export const createGroupSchema = z
    .object({
@@ -44,6 +48,38 @@ export const updateGroupMembershipSchema = z
       message: "Must provide role or isAdmin to update",
    });
 
+export const getGroupMembersSchema = z
+   .object({
+      groupId: z.string().uuid(),
+      cursor: z.string().uuid().optional(),
+      limit: z.number().min(1).max(100).default(20),
+      status: z.nativeEnum(GroupMemberStatus).optional(), // optionally filter by status if needed
+   })
+   .strict();
+
+export const getMyGroupsSchema = z
+   .object({
+      cursor: z.string().uuid().optional(),
+      limit: z.number().min(1).max(100).default(20),
+      status: z.nativeEnum(GroupMemberStatus).optional(),
+   })
+   .strict();
+
+export const getGroupSchema = z
+   .object({
+      groupId: z.string().uuid(),
+   })
+   .strict();
+
+export const discoverGroupsSchema = z
+   .object({
+      cursor: z.string().uuid().optional(),
+      limit: z.number().min(1).max(100).default(20),
+      field: z.string().optional(),
+      query: z.string().optional(),
+   })
+   .strict();
+
 export type CreateGroupSchema = z.infer<typeof createGroupSchema>;
 export type JoinGroupSchema = z.infer<typeof joinGroupSchema>;
 export type ApproveGroupMemberSchema = z.infer<typeof approveGroupMemberSchema>;
@@ -51,3 +87,7 @@ export type LeaveGroupSchema = z.infer<typeof leaveGroupSchema>;
 export type UpdateGroupMembershipSchema = z.infer<
    typeof updateGroupMembershipSchema
 >;
+export type GetGroupMembersSchema = z.infer<typeof getGroupMembersSchema>;
+export type GetMyGroupsSchema = z.infer<typeof getMyGroupsSchema>;
+export type GetGroupSchema = z.infer<typeof getGroupSchema>;
+export type DiscoverGroupsSchema = z.infer<typeof discoverGroupsSchema>;
