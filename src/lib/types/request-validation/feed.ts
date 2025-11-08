@@ -78,7 +78,14 @@ export const togglePostBookmarkSchema = z
    })
    .strict();
 
+export const deletePostSchema = z
+   .object({
+      postId: z.string().uuid(),
+   })
+   .strict();
+
 export type CreatePostSchema = z.infer<typeof createPostSchema>;
 export type TogglePostReactionSchema = z.infer<typeof togglePostReactionSchema>;
 export type AddPostCommentSchema = z.infer<typeof addPostCommentSchema>;
 export type TogglePostBookmarkSchema = z.infer<typeof togglePostBookmarkSchema>;
+export type DeletePostSchema = z.infer<typeof deletePostSchema>;
