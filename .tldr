@@ -36,15 +36,15 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": -267.4429387520868,
-			"y": -270.2127765025041,
-			"lastActivityTimestamp": 1762576586456,
+			"x": -692.2633391411814,
+			"y": -50.056283407706644,
+			"lastActivityTimestamp": 1762623918083,
 			"meta": {}
 		},
 		{
-			"x": 645.0987322621035,
-			"y": 469.6150354757929,
-			"z": 0.9929676876254614,
+			"x": 1029.1934725381584,
+			"y": 452.5290567360104,
+			"z": 0.9764635673365745,
 			"meta": {},
 			"id": "camera:page:page",
 			"typeName": "camera"
@@ -53,9 +53,9 @@
 			"editingShapeId": null,
 			"croppingShapeId": null,
 			"selectedShapeIds": [
-				"shape:wGnNrSDHCY8gUK9BAuonV"
+				"shape:ues09E1HTHJQ4owghjuXn"
 			],
-			"hoveredShapeId": "shape:wGnNrSDHCY8gUK9BAuonV",
+			"hoveredShapeId": "shape:ues09E1HTHJQ4owghjuXn",
 			"erasingShapeIds": [],
 			"hintingShapeIds": [],
 			"focusedGroupId": null,
@@ -284,25 +284,172 @@
 			"typeName": "shape"
 		},
 		{
-			"x": -495.8381482157763,
-			"y": -336.805333107262,
+			"x": -339.73690409930407,
+			"y": -257.8923440010526,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
 			"meta": {},
-			"id": "shape:wGnNrSDHCY8gUK9BAuonV",
+			"id": "shape:HYofwx3BNvStgfMkHaXtE",
 			"type": "text",
 			"props": {
 				"color": "black",
 				"size": "m",
-				"w": 631.015625,
+				"w": 919.65625,
 				"font": "draw",
-				"textAlign": "middle",
+				"textAlign": "start",
 				"autoSize": true,
 				"scale": 1,
 				"richText": {
 					"type": "doc",
 					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "bold"
+										}
+									],
+									"text": "Remaining features:"
+								}
+							]
+						},
+						{
+							"type": "orderedList",
+							"attrs": {
+								"start": 1
+							},
+							"content": [
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "bold"
+														}
+													],
+													"text": "Publications"
+												},
+												{
+													"type": "text",
+													"text": " - traditional published papers (simpler)"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "bold"
+														}
+													],
+													"text": "Repository"
+												},
+												{
+													"type": "text",
+													"text": " - preprint papers with reviews/versions/citations (complex)"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "bold"
+														}
+													],
+													"text": "Messaging"
+												},
+												{
+													"type": "text",
+													"text": " - DMs and channels (medium complexity)"
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "a4BIc",
+			"typeName": "shape"
+		},
+		{
+			"x": -865.056394828953,
+			"y": -177.65190044956103,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:ues09E1HTHJQ4owghjuXn",
+			"type": "text",
+			"props": {
+				"color": "black",
+				"size": "m",
+				"w": 465.40625,
+				"font": "draw",
+				"textAlign": "start",
+				"autoSize": true,
+				"scale": 1,
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "bold"
+										}
+									],
+									"text": "Which actions need files?"
+								}
+							]
+						},
 						{
 							"type": "bulletList",
 							"content": [
@@ -322,11 +469,11 @@
 															"type": "code"
 														}
 													],
-													"text": "updateGroup"
+													"text": "updateUserProfile"
 												},
 												{
 													"type": "text",
-													"text": " - edit name/description/settings"
+													"text": " - avatar"
 												}
 											]
 										}
@@ -348,11 +495,11 @@
 															"type": "code"
 														}
 													],
-													"text": "deleteGroup"
+													"text": "applyForJob"
 												},
 												{
 													"type": "text",
-													"text": " - remove group (leader only)"
+													"text": " - resume, documents"
 												}
 											]
 										}
@@ -374,11 +521,11 @@
 															"type": "code"
 														}
 													],
-													"text": "transferOwnership"
+													"text": "submitRepositoryPaper"
 												},
 												{
 													"type": "text",
-													"text": " - change leader"
+													"text": " - PDF"
 												}
 											]
 										}
@@ -400,23 +547,55 @@
 															"type": "code"
 														}
 													],
-													"text": "getPendingRequests"
+													"text": "createPost"
 												},
 												{
 													"type": "text",
-													"text": " - admins see pending joins"
+													"text": " - images/videos"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "listItem",
+									"content": [
+										{
+											"type": "paragraph",
+											"attrs": {
+												"dir": "auto"
+											},
+											"content": [
+												{
+													"type": "text",
+													"marks": [
+														{
+															"type": "code"
+														}
+													],
+													"text": "createEvent"
+												},
+												{
+													"type": "text",
+													"text": " - event image"
 												}
 											]
 										}
 									]
 								}
 							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							}
 						}
 					]
 				}
 			},
 			"parentId": "page:page",
-			"index": "a4A3L",
+			"index": "a50F1",
 			"typeName": "shape"
 		},
 		{
