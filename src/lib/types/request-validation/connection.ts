@@ -1,3 +1,4 @@
+import { ConnectionStatus } from "@/generated/prisma/client";
 import { z } from "zod";
 
 export const sendConnectionRequestSchema = z
@@ -6,6 +7,16 @@ export const sendConnectionRequestSchema = z
    })
    .strict();
 
+export const respondConnectionRequestSchema = z
+   .object({
+      connectionId: z.string().uuid(),
+      action: z.enum(["accept", "reject"]),
+   })
+   .strict();
+
 export type SendConnectionRequestSchema = z.infer<
    typeof sendConnectionRequestSchema
+>;
+export type RespondConnectionRequestSchema = z.infer<
+   typeof respondConnectionRequestSchema
 >;
