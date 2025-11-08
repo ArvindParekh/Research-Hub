@@ -66,9 +66,39 @@ export const deleteEventSchema = z
    })
    .strict();
 
-export type CreateEventSchema = z.infer<typeof createEventSchema>;
-export type UpdateEventSchema = z.infer<typeof updateEventSchema>;
-export type DeleteEventSchema = z.infer<typeof deleteEventSchema>;
+export const cancelEventRegistrationSchema = z
+   .object({
+      eventId: z.string().uuid(),
+   })
+   .strict();
+
+export const getEventSchema = z
+   .object({
+      eventId: z.string().uuid(),
+   })
+   .strict();
+
+export const getMyEventsSchema = z
+   .object({
+      cursor: z.string().uuid().optional(),
+      limit: z.number().min(1).max(100).default(20),
+      type: z.enum(["registered", "organized", "all"]).default("all"),
+   })
+   .strict();
+
+export const discoverEventsSchema = z
+   .object({
+      cursor: z.string().uuid().optional(),
+      limit: z.number().min(1).max(100).default(20),
+      type: z.nativeEnum(EventType).optional(),
+      format: z.nativeEnum(EventFormat).optional(),
+      query: z.string().optional(), // search by title
+      startAfter: z.string().datetime().optional(), // filter events starting after this date
+      isFeatured: z.boolean().optional(),
+      isLive: z.boolean().optional(),
+   })
+   .strict();
+
 export const toggleEventBookmarkSchema = z
    .object({
       eventId: z.string().uuid(),
@@ -81,6 +111,15 @@ export const registerForEventSchema = z
    })
    .strict();
 
+export type CreateEventSchema = z.infer<typeof createEventSchema>;
+export type UpdateEventSchema = z.infer<typeof updateEventSchema>;
+export type DeleteEventSchema = z.infer<typeof deleteEventSchema>;
+export type CancelEventRegistrationSchema = z.infer<
+   typeof cancelEventRegistrationSchema
+>;
+export type GetEventSchema = z.infer<typeof getEventSchema>;
+export type GetMyEventsSchema = z.infer<typeof getMyEventsSchema>;
+export type DiscoverEventsSchema = z.infer<typeof discoverEventsSchema>;
 export type ToggleEventBookmarkSchema = z.infer<
    typeof toggleEventBookmarkSchema
 >;
