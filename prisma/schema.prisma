@@ -724,7 +724,7 @@ model PaperCategory {
 model PaperKeyword {
   id String @id @default(uuid())
   
-  keyword String
+  keyword String @unique
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
