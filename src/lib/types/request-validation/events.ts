@@ -111,6 +111,14 @@ export const registerForEventSchema = z
    })
    .strict();
 
+export const addEventReviewSchema = z
+   .object({
+      eventId: z.string().uuid(),
+      rating: z.number().min(1).max(5),
+      comment: z.string().max(2000).optional(),
+   })
+   .strict();
+
 export type CreateEventSchema = z.infer<typeof createEventSchema>;
 export type UpdateEventSchema = z.infer<typeof updateEventSchema>;
 export type DeleteEventSchema = z.infer<typeof deleteEventSchema>;
@@ -124,3 +132,4 @@ export type ToggleEventBookmarkSchema = z.infer<
    typeof toggleEventBookmarkSchema
 >;
 export type RegisterForEventSchema = z.infer<typeof registerForEventSchema>;
+export type AddEventReviewSchema = z.infer<typeof addEventReviewSchema>;
