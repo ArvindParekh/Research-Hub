@@ -40,6 +40,7 @@ import {
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import NavbarClient from "@/components/navbar-client";
+import { useParams } from "next/navigation";
 
 // This would normally come from a database
 const getPaper = (id: string) => {
@@ -89,7 +90,7 @@ const getPaper = (id: string) => {
    return papers[id as keyof typeof papers];
 };
 
-export default function PaperPage({ params }: { params: { id: string } }) {
+export default function PaperPage() {
    const [userVotes, setUserVotes] = useState<{
       [key: number]: "helpful" | "not-helpful" | null;
    }>({});
@@ -99,7 +100,8 @@ export default function PaperPage({ params }: { params: { id: string } }) {
       file: "",
    });
 
-   const paper = getPaper(params.id);
+   const params = useParams<{ id: string }>();
+   const paper = getPaper(params?.id);
 
    if (!paper) {
       return <div>Paper not found</div>;

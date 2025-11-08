@@ -22,8 +22,10 @@ import { Badge } from "@/components/ui/badge";
 import { X, Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import NavbarClient from "@/components/navbar-client";
+import { useParams } from "next/navigation";
 
-export default function EditPaperPage({ params }: { params: { id: string } }) {
+export default function EditPaperPage() {
+   const params = useParams<{ id: string }>();
    const [title, setTitle] = useState(
       "Advanced Neural Architecture Search with Quantum-Inspired Optimization"
    );
@@ -84,7 +86,7 @@ export default function EditPaperPage({ params }: { params: { id: string } }) {
                      </p>
                   </div>
                   <Button variant='outline' size='sm' asChild>
-                     <Link href={`/repository/${params.id}`}>
+                     <Link href={`/repository/${params?.id}`}>
                         <ArrowLeft className='w-4 h-4 mr-2' />
                         Back to Paper
                      </Link>
@@ -234,7 +236,7 @@ export default function EditPaperPage({ params }: { params: { id: string } }) {
 
                <div className='flex gap-3 pt-4'>
                   <Button variant='outline' asChild>
-                     <Link href={`/repository/${params.id}`}>Cancel</Link>
+                     <Link href={`/repository/${params?.id}`}>Cancel</Link>
                   </Button>
                   <Button className='flex-1'>Save Changes</Button>
                </div>
