@@ -64,5 +64,14 @@ export const togglePostReactionSchema = z
    })
    .strict();
 
+export const addPostCommentSchema = z
+   .object({
+      postId: z.string().uuid(),
+      content: z.string().min(1).max(1000),
+      parentCommentId: z.string().uuid().optional(),
+   })
+   .strict();
+
 export type CreatePostSchema = z.infer<typeof createPostSchema>;
 export type TogglePostReactionSchema = z.infer<typeof togglePostReactionSchema>;
+export type AddPostCommentSchema = z.infer<typeof addPostCommentSchema>;
