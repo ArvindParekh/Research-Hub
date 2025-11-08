@@ -1,5 +1,61 @@
 import { z } from "zod";
-import { ReactionType } from "@/generated/prisma/client";
+import {
+   PostType,
+   PostVisibility,
+   ReactionType,
+   AttachmentType,
+} from "@/generated/prisma/client";
+
+export const createPostSchema = z
+   .object({
+      content: z.string().min(1).max(1000).optional(),
+      type: z.nativeEnum(PostType),
+      visibility: z.nativeEnum(PostVisibility),
+      sharedPublicationId: z.string().uuid().optional(),
+      sharedEventId: z.string().uuid().optional(),
+      sharedJobId: z.string().uuid().optional(),
+      sharedPaperId: z.string().uuid().optional(),
+      originalPostId: z.string().uuid().optional(),
+      isQuote: z.boolean().optional(),
+      attachments: z
+         .array(
+            z.object({
+               type: z.nativeEnum(AttachmentType),
+               url: z.string().url(),
+               fileName: z.string().optional(),
+               fileSize: z.number().optional(),
+               mimeType: z.string().optional(),
+            })
+         )
+         .optional(),
+   })
+   .strict()
+   .refine(
+      (data) => {
+         const sharedCount = [
+            data.sharedPublicationId,
+            data.sharedEventId,
+            data.sharedJobId,
+            data.sharedPaperId,
+         ].filter(Boolean).length;
+         return sharedCount <= 1;
+      },
+      { message: "Can only share one item at a time" }
+   )
+   .refine(
+      (data) => {
+         return (
+            data.content ||
+            data.sharedPublicationId ||
+            data.sharedEventId ||
+            data.sharedJobId ||
+            data.sharedPaperId ||
+            data.originalPostId ||
+            (data.attachments && data.attachments.length > 0)
+         );
+      },
+      { message: "At least one content or attachment is required" }
+   );
 
 export const togglePostReactionSchema = z
    .object({
@@ -8,4 +64,5 @@ export const togglePostReactionSchema = z
    })
    .strict();
 
+export type CreatePostSchema = z.infer<typeof createPostSchema>;
 export type TogglePostReactionSchema = z.infer<typeof togglePostReactionSchema>;
