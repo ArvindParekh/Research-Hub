@@ -128,7 +128,7 @@ model Publication {
 model ResearchInterest {
   id String @id @default(uuid())
 
-  interest String
+  interest String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

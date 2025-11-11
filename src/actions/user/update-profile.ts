@@ -11,7 +11,7 @@ import { User } from "@/generated/prisma/client";
 
 export async function updateUserProfile(
    payload: UpdateUserProfileSchema
-): Promise<ActionResponse<User>> {
+): Promise<ActionResponse<{ user: User }>> {
    const stackUser = await stackServerApp.getUser();
    if (!stackUser) {
       return {
@@ -41,7 +41,7 @@ export async function updateUserProfile(
       return {
          success: true,
          message: "User profile updated successfully",
-         data: updatedUser,
+         data: { user: updatedUser },
       };
    } catch (error) {
       console.error("Error updating user profile", error);

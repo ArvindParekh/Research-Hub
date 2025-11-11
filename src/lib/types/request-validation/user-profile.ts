@@ -15,4 +15,22 @@ export const updateUserProfileSchema = z
    .partial()
    .strict();
 
+export const addResearchInterestSchema = z
+   .object({
+      interest: z.string().min(1).max(100),
+   })
+   .strict();
+
+export const removeResearchInterestSchema = z
+   .object({
+      interestId: z.string().uuid(),
+   })
+   .strict();
+
 export type UpdateUserProfileSchema = z.infer<typeof updateUserProfileSchema>;
+export type AddResearchInterestSchema = z.infer<
+   typeof addResearchInterestSchema
+>;
+export type RemoveResearchInterestSchema = z.infer<
+   typeof removeResearchInterestSchema
+>;
