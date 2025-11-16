@@ -3,63 +3,24 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-   BookOpen,
    MapPin,
    Mail,
    MessageSquare,
    UserPlus,
    ExternalLink,
+   Globe,
+   UserCheck,
+   Clock,
+   Users,
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
-
-// This would normally come from a database
-const getResearcher = (id: string) => {
-   const researchers = {
-      "sarah-chen": {
-         id: "sarah-chen",
-         name: "Dr. Sarah Chen",
-         title: "Professor of Computer Science",
-         institution: "MIT",
-         location: "Cambridge, MA",
-         email: "schen@mit.edu",
-         website: "https://sarahchen.mit.edu",
-         hIndex: 42,
-         publications: 127,
-         citations: 8945,
-         field: "Machine Learning",
-         bio: "Dr. Sarah Chen is a leading researcher in deep learning and neural networks with a particular focus on computer vision applications. Her work has been instrumental in advancing the field of artificial intelligence, with groundbreaking contributions to convolutional neural networks and transfer learning methodologies.",
-         students: 8,
-         projects: 12,
-         recentPublications: [
-            {
-               title: "Advanced Neural Architectures for Computer Vision",
-               journal: "Nature Machine Intelligence",
-               year: 2024,
-               citations: 156,
-            },
-            {
-               title: "Transfer Learning in Deep Neural Networks: A Comprehensive Study",
-               journal: "Journal of Machine Learning Research",
-               year: 2023,
-               citations: 243,
-            },
-            {
-               title: "Efficient Training Methods for Large-Scale Vision Models",
-               journal: "ICML 2023",
-               year: 2023,
-               citations: 89,
-            },
-         ],
-         currentStudents: [
-            { name: "Alex Thompson", level: "PhD", year: "3rd Year" },
-            { name: "Maria Garcia", level: "PhD", year: "2nd Year" },
-            { name: "James Liu", level: "Masters", year: "1st Year" },
-         ],
-      },
-   };
-   return researchers[id as keyof typeof researchers];
-};
+import { getUserProfile } from "@/actions/user/get-user-profile";
+import { getConnectionStatus } from "@/actions/user/get-connection-status";
+import { stackServerApp } from "@/stack/server";
+import { redirect } from "next/navigation";
+import { ConnectButton } from "@/components/profile/connect-button";
+import { format } from "date-fns";
 
 export default async function ProfilePage({
    params,
@@ -67,96 +28,121 @@ export default async function ProfilePage({
    params: Promise<{ id: string }>;
 }) {
    const { id } = await params;
-   const researcher = getResearcher(id);
+   const currentUser = await stackServerApp.getUser();
 
-   if (!researcher) {
-      return <div>Researcher not found</div>;
+   const profileResponse = await getUserProfile(id);
+
+   if (!profileResponse.success || !profileResponse.data) {
+      return (
+         <div className='min-h-screen bg-background'>
+            <Navbar page='profiles' />
+            <div className='container mx-auto px-4 py-12'>
+               <div className='text-center'>
+                  <h1 className='text-2xl font-semibold mb-2'>
+                     Researcher not found
+                  </h1>
+                  <p className='text-muted-foreground mb-6'>
+                     The profile you're looking for doesn't exist.
+                  </p>
+                  <Button asChild>
+                     <Link href='/feed'>Go to Feed</Link>
+                  </Button>
+               </div>
+            </div>
+         </div>
+      );
    }
+
+   const profile = profileResponse.data;
+   const isOwnProfile = currentUser?.id === id;
+
+   // get connection status if not own profile
+   const connectionStatusResponse = !isOwnProfile
+      ? await getConnectionStatus(id)
+      : null;
+   const connectionStatus = connectionStatusResponse?.data;
+
+   const fullName =
+      profile.firstName && profile.lastName
+         ? `${profile.firstName} ${profile.lastName}`
+         : profile.firstName || "Unknown User";
+
+   const initials =
+      profile.firstName && profile.lastName
+         ? `${profile.firstName[0]}${profile.lastName[0]}`
+         : profile.firstName?.[0] || "U";
 
    return (
       <div className='min-h-screen bg-background'>
          <Navbar page='profiles' />
-         {/* <header className='border-b border-border bg-card'>
-            <div className='container mx-auto px-4 py-6'>
-               <div className='flex items-center justify-between'>
-                  <Link href='/' className='flex items-center gap-3'>
-                     <div className='w-8 h-8 bg-primary rounded flex items-center justify-center'>
-                        <BookOpen className='w-4 h-4 text-primary-foreground' />
-                     </div>
-                     <h1 className='text-lg font-semibold text-foreground'>
-                        Research Hub
-                     </h1>
-                  </Link>
-                  <nav className='hidden md:flex items-center gap-8'>
-                     <Link
-                        href='/profiles'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Researchers
-                     </Link>
-                     <Link
-                        href='/groups'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Research Groups
-                     </Link>
-                     <Link
-                        href='/repository'
-                        className='text-sm text-muted-foreground hover:text-foreground transition-colors'
-                     >
-                        Repository
-                     </Link>
-                  </nav>
-               </div>
-            </div>
-         </header> */}
 
          <div className='container mx-auto px-4 py-12'>
             <div className='mb-10'>
                <div className='flex flex-col md:flex-row gap-8 items-start'>
                   <Avatar className='w-32 h-32'>
-                     <AvatarImage
-                        src={`/placeholder.svg?height=128&width=128&query=professional academic portrait`}
-                     />
-                     <AvatarFallback>
-                        {researcher.name
-                           .split(" ")
-                           .map((n) => n[0])
-                           .join("")}
+                     <AvatarImage src={undefined} />
+                     <AvatarFallback className='text-2xl'>
+                        {initials}
                      </AvatarFallback>
                   </Avatar>
 
                   <div className='flex-1'>
-                     <h1 className='text-4xl font-semibold mb-2'>
-                        {researcher.name}
-                     </h1>
-                     <p className='text-lg text-muted-foreground mb-1'>
-                        {researcher.title}
-                     </p>
-                     <p className='text-base text-muted-foreground mb-4'>
-                        {researcher.institution}
-                     </p>
+                     <h1 className='text-4xl font-semibold mb-2'>{fullName}</h1>
+                     {profile.title && (
+                        <p className='text-lg text-muted-foreground mb-1'>
+                           {profile.title}
+                        </p>
+                     )}
+                     {profile.institution && (
+                        <p className='text-base text-muted-foreground mb-4'>
+                           {profile.institution}
+                        </p>
+                     )}
 
                      <div className='flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6'>
+                        {profile.location && (
+                           <div className='flex items-center gap-1'>
+                              <MapPin className='w-4 h-4' />
+                              {profile.location}
+                           </div>
+                        )}
+                        {profile.website && (
+                           <a
+                              href={profile.website}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='flex items-center gap-1 hover:text-primary transition-colors'
+                           >
+                              <Globe className='w-4 h-4' />
+                              Website
+                           </a>
+                        )}
                         <div className='flex items-center gap-1'>
-                           <MapPin className='w-4 h-4' />
-                           {researcher.location}
-                        </div>
-                        <div className='flex items-center gap-1'>
-                           <Mail className='w-4 h-4' />
-                           {researcher.email}
+                           <Clock className='w-4 h-4' />
+                           Joined{" "}
+                           {format(new Date(profile.createdAt), "MMM yyyy")}
                         </div>
                      </div>
 
                      <div className='flex gap-3'>
-                        <Button size='sm'>
-                           <UserPlus className='w-4 h-4 mr-2' />
-                           Connect
-                        </Button>
-                        <Button size='sm' variant='outline'>
-                           <MessageSquare className='w-4 h-4 mr-2' />
-                           Message
-                        </Button>
+                        {isOwnProfile ? (
+                           <Button asChild size='sm'>
+                              <Link href='/user/settings'>Edit Profile</Link>
+                           </Button>
+                        ) : (
+                           <>
+                              <ConnectButton
+                                 targetUserId={id}
+                                 connectionStatus={connectionStatus}
+                              />
+                              <Button size='sm' variant='outline' asChild>
+                                 <Link href={`/messages?userId=${id}`}>
+                                    <MessageSquare className='w-4 h-4 mr-2' />
+                                    Message
+                                 </Link>
+                              </Button>
+                           </>
+                        )}
                      </div>
                   </div>
                </div>
@@ -165,13 +151,15 @@ export default async function ProfilePage({
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-10'>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {researcher.hIndex}
+                     {profile._count.followers}
                   </div>
-                  <div className='text-xs text-muted-foreground'>H-Index</div>
+                  <div className='text-xs text-muted-foreground'>
+                     Connections
+                  </div>
                </div>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {researcher.publications}
+                     {profile._count.publications}
                   </div>
                   <div className='text-xs text-muted-foreground'>
                      Publications
@@ -179,134 +167,130 @@ export default async function ProfilePage({
                </div>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {researcher.citations}
+                     {profile._count.posts}
                   </div>
-                  <div className='text-xs text-muted-foreground'>Citations</div>
+                  <div className='text-xs text-muted-foreground'>Posts</div>
                </div>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {researcher.students}
+                     {profile._count.repositoryPapers}
                   </div>
-                  <div className='text-xs text-muted-foreground'>Students</div>
+                  <div className='text-xs text-muted-foreground'>Papers</div>
                </div>
             </div>
 
             <Tabs defaultValue='about' className='space-y-6'>
-               <TabsList className='grid w-full grid-cols-4'>
+               <TabsList className='grid w-full grid-cols-3'>
                   <TabsTrigger value='about' className='text-sm'>
                      About
                   </TabsTrigger>
                   <TabsTrigger value='publications' className='text-sm'>
                      Publications
                   </TabsTrigger>
-                  <TabsTrigger value='students' className='text-sm'>
-                     Students
-                  </TabsTrigger>
-                  <TabsTrigger value='projects' className='text-sm'>
-                     Projects
+                  <TabsTrigger value='posts' className='text-sm'>
+                     Posts
                   </TabsTrigger>
                </TabsList>
 
                <TabsContent value='about' className='space-y-6'>
-                  <div className='border border-border rounded-lg p-6'>
-                     <h3 className='font-semibold text-foreground mb-3'>
-                        Biography
-                     </h3>
-                     <p className='text-muted-foreground leading-relaxed text-sm'>
-                        {researcher.bio}
-                     </p>
-                  </div>
-
-                  <div className='border border-border rounded-lg p-6'>
-                     <h3 className='font-semibold text-foreground mb-4'>
-                        Research Interests
-                     </h3>
-                     <div className='flex flex-wrap gap-2'>
-                        {[
-                           "Deep Learning",
-                           "Computer Vision",
-                           "Neural Networks",
-                           "Transfer Learning",
-                           "AI Ethics",
-                        ].map((interest) => (
-                           <Badge
-                              key={interest}
-                              variant='outline'
-                              className='text-xs'
-                           >
-                              {interest}
-                           </Badge>
-                        ))}
+                  {profile.bio && (
+                     <div className='border border-border rounded-lg p-6'>
+                        <h3 className='font-semibold text-foreground mb-3'>
+                           Biography
+                        </h3>
+                        <p className='text-muted-foreground leading-relaxed text-sm whitespace-pre-wrap'>
+                           {profile.bio}
+                        </p>
                      </div>
-                  </div>
+                  )}
+
+                  {profile.researchInterests.length > 0 && (
+                     <div className='border border-border rounded-lg p-6'>
+                        <h3 className='font-semibold text-foreground mb-4'>
+                           Research Interests
+                        </h3>
+                        <div className='flex flex-wrap gap-2'>
+                           {profile.researchInterests.map((interest) => (
+                              <Badge
+                                 key={interest.id}
+                                 variant='outline'
+                                 className='text-xs'
+                              >
+                                 {interest.interest}
+                              </Badge>
+                           ))}
+                        </div>
+                     </div>
+                  )}
+
+                  {!profile.bio && profile.researchInterests.length === 0 && (
+                     <div className='border border-border rounded-lg p-6'>
+                        <p className='text-sm text-muted-foreground text-center'>
+                           No information available yet
+                        </p>
+                     </div>
+                  )}
                </TabsContent>
 
                <TabsContent value='publications' className='space-y-4'>
-                  {researcher.recentPublications.map((pub, index) => (
-                     <div
-                        key={index}
-                        className='border border-border rounded-lg p-6'
-                     >
-                        <div className='flex justify-between items-start'>
-                           <div className='flex-1'>
-                              <h4 className='font-semibold text-foreground text-sm mb-2'>
-                                 {pub.title}
-                              </h4>
-                              <p className='text-xs text-muted-foreground'>
-                                 {pub.journal} • {pub.year} • {pub.citations}{" "}
-                                 citations
-                              </p>
-                           </div>
-                           <Button variant='ghost' size='sm'>
-                              <ExternalLink className='w-4 h-4' />
-                           </Button>
-                        </div>
-                     </div>
-                  ))}
-               </TabsContent>
-
-               <TabsContent value='students' className='space-y-4'>
-                  <div className='border border-border rounded-lg p-6'>
-                     <h3 className='font-semibold text-foreground mb-4'>
-                        Current Students
-                     </h3>
-                     <div className='space-y-4'>
-                        {researcher.currentStudents.map((student, index) => (
-                           <div
-                              key={index}
-                              className='flex items-center justify-between pb-4 border-b border-border last:pb-0 last:border-0'
-                           >
-                              <div className='flex items-center gap-3'>
-                                 <Avatar className='w-10 h-10'>
-                                    <AvatarFallback className='text-xs'>
-                                       {student.name
-                                          .split(" ")
-                                          .map((n) => n[0])
-                                          .join("")}
-                                    </AvatarFallback>
-                                 </Avatar>
-                                 <div>
-                                    <p className='font-medium text-sm'>
-                                       {student.name}
-                                    </p>
-                                    <p className='text-xs text-muted-foreground'>
-                                       {student.level} • {student.year}
-                                    </p>
+                  {profile.publications.length > 0 ? (
+                     profile.publications.map((pub) => (
+                        <div
+                           key={pub.id}
+                           className='border border-border rounded-lg p-6'
+                        >
+                           <div className='flex justify-between items-start'>
+                              <div className='flex-1'>
+                                 <h4 className='font-semibold text-foreground text-sm mb-2'>
+                                    {pub.title}
+                                 </h4>
+                                 <div className='flex flex-wrap gap-2 text-xs text-muted-foreground mb-2'>
+                                    {pub.journal && <span>{pub.journal}</span>}
+                                    {pub.publicationDate && (
+                                       <span>
+                                          {format(
+                                             new Date(pub.publicationDate),
+                                             "yyyy"
+                                          )}
+                                       </span>
+                                    )}
+                                    <span>
+                                       {pub._count.citations_received} citations
+                                    </span>
                                  </div>
+                                 {pub.abstract && (
+                                    <p className='text-xs text-muted-foreground line-clamp-2'>
+                                       {pub.abstract}
+                                    </p>
+                                 )}
                               </div>
+                              {pub.doi && (
+                                 <Button variant='ghost' size='sm' asChild>
+                                    <a
+                                       href={`https://doi.org/${pub.doi}`}
+                                       target='_blank'
+                                       rel='noopener noreferrer'
+                                    >
+                                       <ExternalLink className='w-4 h-4' />
+                                    </a>
+                                 </Button>
+                              )}
                            </div>
-                        ))}
+                        </div>
+                     ))
+                  ) : (
+                     <div className='border border-border rounded-lg p-6'>
+                        <p className='text-sm text-muted-foreground text-center'>
+                           No publications yet
+                        </p>
                      </div>
-                  </div>
+                  )}
                </TabsContent>
 
-               <TabsContent value='projects'>
+               <TabsContent value='posts'>
                   <div className='border border-border rounded-lg p-6'>
-                     <h3 className='font-semibold text-foreground mb-2'>
-                        Active Research Projects
-                     </h3>
-                     <p className='text-sm text-muted-foreground'>
-                        Projects will be displayed here
+                     <p className='text-sm text-muted-foreground text-center'>
+                        User posts will be displayed here
                      </p>
                   </div>
                </TabsContent>

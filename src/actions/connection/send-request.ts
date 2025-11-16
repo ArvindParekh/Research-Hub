@@ -8,10 +8,11 @@ import { ActionResponse } from "@/lib/types/action-response";
 import { prisma } from "@/lib/prisma";
 import { stackServerApp } from "@/stack/server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { Connection } from "@/generated/prisma/client";
 
 export async function sendConnectionRequest(
    payload: SendConnectionRequestSchema
-): Promise<ActionResponse<{ isRequestSent: boolean }>> {
+): Promise<ActionResponse<{ connection: Connection }>> {
    const stackUser = await stackServerApp.getUser();
    if (!stackUser) {
       return {
@@ -45,7 +46,7 @@ export async function sendConnectionRequest(
       return {
          success: true,
          message: "Connection request sent successfully",
-         data: { isRequestSent: true },
+         data: { connection: newConnection },
       };
    } catch (error) {
       if (

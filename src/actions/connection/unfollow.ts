@@ -8,7 +8,7 @@ import { ActionResponse } from "@/lib/types/action-response";
 import { prisma } from "@/lib/prisma";
 import { stackServerApp } from "@/stack/server";
 
-export async function unfollowUser(
+export async function unfollow(
    payload: UnfollowUserSchema
 ): Promise<ActionResponse<{ isUnfollowed: boolean }>> {
    const stackUser = await stackServerApp.getUser();
