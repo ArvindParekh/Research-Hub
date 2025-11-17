@@ -48,11 +48,19 @@ export async function getUserFeed(
          },
          include: {
             author: { select: { id: true, firstName: true, lastName: true } },
-            reactions: { select: { type: true } },
+            reactions: { 
+               select: { type: true, userId: true },
+               where: { userId: stackUser.id },
+            },
+            bookmarks: {
+               select: { id: true },
+               where: { userId: stackUser.id },
+            },
             comments: { select: { id: true } },
             _count: {
                select: { reactions: true, comments: true, bookmarks: true },
             },
+            attachments: true,
          },
          orderBy: { createdAt: "desc" },
          take: (limit ?? 20) + 1,
@@ -63,13 +71,21 @@ export async function getUserFeed(
       });
 
       const hasMore = posts.length > (limit ?? 20); // default limit is 20
-      const items = hasMore ? posts.slice(0, -1) : posts;
+      const rawItems = hasMore ? posts.slice(0, -1) : posts;
+      
+      // Add user interaction flags
+      const items = rawItems.map((post) => ({
+         ...post,
+         isLikedByUser: post.reactions.length > 0,
+         isBookmarkedByUser: post.bookmarks.length > 0,
+      }));
+      
       const nextCursor = hasMore ? items[items.length - 1].id : undefined;
 
       return {
          success: true,
          message: "Feed fetched successfully",
-         data: { posts: items, nextCursor },
+         data: { posts: items as any, nextCursor },
       };
    } catch (error) {
       console.error("Error fetching feed", error);

@@ -95,11 +95,16 @@ export default async function Navbar({ page = "home" }: { page?: NavbarPage }) {
                            >
                               <Avatar className='w-8 h-8 rounded-full'>
                                  <AvatarImage
-                                    src='https://github.com/shadcn.png'
-                                    alt='@shadcn'
+                                    src={
+                                       user.profileImageUrl ||
+                                       "https://github.com/shadcn.png"
+                                    }
+                                    alt={user.displayName || "User"}
                                  />
                                  <AvatarFallback className='text-xs'>
-                                    CN
+                                    {user.displayName
+                                       ?.charAt(0)
+                                       .toUpperCase() || "U"}
                                  </AvatarFallback>
                               </Avatar>
                            </Button>

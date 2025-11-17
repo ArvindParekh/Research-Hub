@@ -1,36 +1,139 @@
 "use client";
 
 import type React from "react";
-
-import { useState, useRef } from "react";
+import { useState, useRef, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ImageIcon, X } from "lucide-react";
+import { ImageIcon, X, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { createPost } from "@/actions/feed/create-post";
+import { PostType, PostVisibility, AttachmentType } from "@/lib/enums/feed";
+import { useToast } from "@/hooks/use-toast";
+import type { PostWithDetails } from "@/lib/types/feed";
+import {
+   Select,
+   SelectContent,
+   SelectItem,
+   SelectTrigger,
+   SelectValue,
+} from "@/components/ui/select";
 
 interface CreatePostCardProps {
-   onPostSubmit: (content: string, image?: string) => void;
+   onPostCreated?: (post: PostWithDetails) => void;
+   currentUser?: {
+      id: string;
+      firstName: string | null;
+      lastName: string | null;
+   };
 }
 
-export function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
+export function CreatePostCard({
+   onPostCreated,
+   currentUser,
+}: CreatePostCardProps) {
+   const { toast } = useToast();
    const [content, setContent] = useState("");
    const [isFocused, setIsFocused] = useState(false);
    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+   const [visibility, setVisibility] = useState<PostVisibility>(
+      PostVisibility.Public
+   );
+   const [isPending, startTransition] = useTransition();
    const fileInputRef = useRef<HTMLInputElement>(null);
 
    const handleSubmit = () => {
-      if (content.trim()) {
-         onPostSubmit(content, selectedImage || undefined);
-         setContent("");
-         setSelectedImage(null);
-         setIsFocused(false);
+      if (!content.trim() && !selectedImage) {
+         toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Please add some content or an image",
+         });
+         return;
       }
+
+      startTransition(async () => {
+         try {
+            const postType = selectedImage ? PostType.Image : PostType.Text;
+            const attachments = selectedImage
+               ? [
+                    {
+                       type: AttachmentType.Image,
+                       url: selectedImage,
+                       fileName: "image.jpg",
+                    },
+                 ]
+               : undefined;
+
+            const response = await createPost({
+               content: content.trim() || undefined,
+               type: postType,
+               visibility,
+               attachments,
+            });
+
+            if (response.success && response.data) {
+               // create optimistic post data
+               const newPost: PostWithDetails = {
+                  ...response.data,
+                  author: {
+                     id: currentUser?.id || "",
+                     firstName: currentUser?.firstName || null,
+                     lastName: currentUser?.lastName || null,
+                  },
+                  reactions: [],
+                  comments: [],
+                  _count: {
+                     reactions: 0,
+                     comments: 0,
+                     bookmarks: 0,
+                  },
+                  isLikedByUser: false,
+                  isBookmarkedByUser: false,
+               };
+
+               onPostCreated?.(newPost);
+
+               // reset form
+               setContent("");
+               setSelectedImage(null);
+               setIsFocused(false);
+               setVisibility(PostVisibility.Public);
+
+               toast({
+                  title: "Success",
+                  description: "Post created successfully",
+               });
+            } else {
+               toast({
+                  variant: "destructive",
+                  title: "Error",
+                  description: response.message,
+               });
+            }
+         } catch (error) {
+            toast({
+               variant: "destructive",
+               title: "Error",
+               description: "Failed to create post",
+            });
+         }
+      });
    };
 
    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
+         // check file size (max 5MB)
+         if (file.size > 5 * 1024 * 1024) {
+            toast({
+               variant: "destructive",
+               title: "Error",
+               description: "Image size should be less than 5MB",
+            });
+            return;
+         }
+
          const reader = new FileReader();
          reader.onload = (event) => {
             setSelectedImage(event.target?.result as string);
@@ -39,14 +142,23 @@ export function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
       }
    };
 
+   const handleCancel = () => {
+      setContent("");
+      setSelectedImage(null);
+      setIsFocused(false);
+      setVisibility(PostVisibility.Public);
+   };
+
+   const userInitials = currentUser?.firstName?.charAt(0).toUpperCase() || "U";
+
    return (
       <div className='border-b border-border bg-background'>
          <div className='px-6 py-5 space-y-4'>
-            {/* Header with Avatar */}
+            {/* header with avatar */}
             <div className='flex items-start gap-4'>
                <Avatar className='w-12 h-12 shrink-0 border border-border/30'>
-                  <AvatarImage src='/academic-portrait.png' />
-                  <AvatarFallback>You</AvatarFallback>
+                  <AvatarImage src={undefined} />
+                  <AvatarFallback>{userInitials}</AvatarFallback>
                </Avatar>
                <div className='flex-1'>
                   <Textarea
@@ -54,28 +166,25 @@ export function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
                      value={content}
                      onChange={(e) => setContent(e.target.value)}
                      onFocus={() => setIsFocused(true)}
-                     onBlur={() =>
-                        !content && !selectedImage && setIsFocused(false)
-                     }
+                     disabled={isPending}
                      className='min-h-20 border-0 bg-background focus:ring-0 resize-none text-base placeholder:text-muted-foreground/60 p-0 focus:outline-none'
                   />
                </div>
             </div>
 
-            {/* Selected Image Preview */}
+            {/* selected image preview */}
             {selectedImage && (
-               <div className='relative w-full rounded-lg overflow-hidden bg-muted/50 border border-border/50 max-h-72'>
+               <div className='relative w-full rounded-lg overflow-hidden bg-muted/50 border border-border/50 aspect-video'>
                   <Image
                      src={selectedImage || "/placeholder.svg"}
                      alt='Preview'
-                     width={560}
-                     height={320}
-                     className='w-full object-cover'
+                     className='object-cover w-full h-full'
                   />
                   <Button
                      variant='ghost'
                      size='sm'
                      onClick={() => setSelectedImage(null)}
+                     disabled={isPending}
                      className='absolute top-2 right-2 bg-background/80 hover:bg-background text-foreground rounded-full h-8 w-8 p-0'
                   >
                      <X className='w-4 h-4' />
@@ -83,36 +192,58 @@ export function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
                </div>
             )}
 
-            {/* Action Buttons - Show when focused or image selected */}
+            {/* action buttons - show when focused or image selected */}
             {(isFocused || selectedImage || content) && (
                <div className='flex items-center justify-between gap-3 pt-4 border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200'>
-                  <div className='flex gap-2'>
+                  <div className='flex gap-2 items-center'>
                      <input
                         ref={fileInputRef}
                         type='file'
                         accept='image/*'
                         onChange={handleImageSelect}
+                        disabled={isPending}
                         className='hidden'
                      />
                      <Button
                         variant='ghost'
                         size='sm'
                         onClick={() => fileInputRef.current?.click()}
+                        disabled={isPending}
                         className='text-xs text-muted-foreground hover:text-primary hover:bg-primary/10'
                      >
                         <ImageIcon className='w-4 h-4 mr-1.5' />
                         Photo
                      </Button>
+
+                     <Select
+                        value={visibility}
+                        onValueChange={(value) =>
+                           setVisibility(value as PostVisibility)
+                        }
+                        disabled={isPending}
+                     >
+                        <SelectTrigger className='w-32 h-8 text-xs'>
+                           <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value={PostVisibility.Public}>
+                              Public
+                           </SelectItem>
+                           <SelectItem value={PostVisibility.Connections}>
+                              Connections
+                           </SelectItem>
+                           <SelectItem value={PostVisibility.Private}>
+                              Private
+                           </SelectItem>
+                        </SelectContent>
+                     </Select>
                   </div>
                   <div className='flex gap-2'>
                      <Button
                         variant='ghost'
                         size='sm'
-                        onClick={() => {
-                           setContent("");
-                           setSelectedImage(null);
-                           setIsFocused(false);
-                        }}
+                        onClick={handleCancel}
+                        disabled={isPending}
                         className='text-xs text-muted-foreground hover:bg-muted'
                      >
                         Cancel
@@ -120,10 +251,15 @@ export function CreatePostCard({ onPostSubmit }: CreatePostCardProps) {
                      <Button
                         size='sm'
                         onClick={handleSubmit}
-                        disabled={!content.trim()}
+                        disabled={
+                           (!content.trim() && !selectedImage) || isPending
+                        }
                         className='text-xs font-medium'
                      >
-                        Post
+                        {isPending && (
+                           <Loader2 className='w-3 h-3 mr-1.5 animate-spin' />
+                        )}
+                        {isPending ? "Posting..." : "Post"}
                      </Button>
                   </div>
                </div>

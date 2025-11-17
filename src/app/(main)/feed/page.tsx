@@ -1,56 +1,27 @@
 "use client";
 
-import { useState } from "react";
 import { CreatePostCard } from "@/components/feed/create-post-card";
 import { PostCard } from "@/components/feed/post-card";
 import { TrendingSidebar } from "@/components/feed/trending-sidebar";
 import NavbarClient from "@/components/navbar-client";
+import { useFeed } from "@/hooks/use-feed";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { useUser } from "@stackframe/stack";
+import { Loader2 } from "lucide-react";
+import { Post, User } from "@/generated/prisma/client";
+import { PostWithDetails } from "@/lib/types/feed";
 
 export default function FeedPage() {
-   const [posts, setPosts] = useState([
-      {
-         id: 1,
-         author: "Dr. Sarah Chen",
-         role: "Professor of Computer Science at MIT",
-         avatar: "/academic-portrait.png",
-         timestamp: "2 hours ago",
-         content:
-            "Excited to announce that our latest paper on quantum machine learning has been accepted at NeurIPS! Grateful to my amazing research team for their dedication and hard work on this project.",
-         image: "/quantum-machine-learning-research-visualization.jpg",
-         likes: 156,
-         comments: 23,
-         shares: 12,
-         tags: ["Machine Learning", "Quantum Computing", "NeurIPS"],
-      },
-      {
-         id: 2,
-         author: "Prof. Michael Rodriguez",
-         role: "Research Director, Stanford AI Lab",
-         avatar: "/academic-portrait.png",
-         timestamp: "5 hours ago",
-         content:
-            "We are recruiting talented graduate students for our quantum physics lab. Interested candidates with strong physics background and research experience are encouraged to reach out. Join us in pushing the boundaries of quantum research!",
-         image: "/quantum-physics-laboratory-research-team.jpg",
-         likes: 89,
-         comments: 34,
-         shares: 45,
-         tags: ["Hiring", "Physics", "Graduate Students"],
-      },
-      {
-         id: 3,
-         author: "Dr. Emily Johnson",
-         role: "Associate Professor of Neuroscience",
-         avatar: "/academic-portrait.png",
-         timestamp: "1 day ago",
-         content:
-            "Collaborative research project with colleagues at Oxford on neuroscience applications. Looking forward to presenting our findings next month at the International Conference on Brain Research.",
-         image: "/neuroscience-brain-research-collaboration.jpg",
-         likes: 234,
-         comments: 56,
-         shares: 78,
-         tags: ["Neuroscience", "Collaboration", "Research"],
-      },
-   ]);
+   const user = useUser();
+   const { posts, isLoading, hasMore, error, loadMore, addPost, removePost } =
+      useFeed(10);
+
+   // ref for infinite scroll
+   const loadMoreRef = useInfiniteScroll(loadMore, {
+      hasMore,
+      isLoading,
+      threshold: 300,
+   });
 
    const trendingTopics = [
       { tag: "Artificial Intelligence", posts: 1234 },
@@ -60,21 +31,20 @@ export default function FeedPage() {
       { tag: "Space Exploration", posts: 523 },
    ];
 
-   const handlePostSubmit = (content: string, image?: string) => {
-      const newPost = {
-         id: posts.length + 1,
-         author: "You",
-         role: "Researcher",
-         avatar: "/academic-portrait.png",
-         timestamp: "Just now",
-         content,
-         image: image || "",
-         likes: 0,
-         comments: 0,
-         shares: 0,
-         tags: [],
-      };
-      setPosts([newPost, ...posts]);
+   const currentUser = user
+      ? {
+           id: user.id,
+           firstName: user.displayName?.split(" ")[0] || null,
+           lastName: user.displayName?.split(" ")[1] || null,
+        }
+      : undefined;
+
+   const handlePostCreated = (newPost: PostWithDetails) => {
+      addPost(newPost);
+   };
+
+   const handlePostDeleted = (postId: string) => {
+      removePost(postId);
    };
 
    return (
@@ -90,21 +60,70 @@ export default function FeedPage() {
                {/* Left Column - Main Feed */}
                <div className='lg:col-span-2 border-r border-border/50'>
                   {/* Create Post */}
-                  <CreatePostCard onPostSubmit={handlePostSubmit} />
+                  <CreatePostCard
+                     onPostCreated={handlePostCreated}
+                     currentUser={currentUser}
+                  />
+
+                  {/* Error State */}
+                  {error && (
+                     <div className='px-6 py-8 text-center'>
+                        <p className='text-sm text-destructive'>{error}</p>
+                     </div>
+                  )}
 
                   {/* Posts Feed */}
                   <div>
                      {posts.map((post) => (
-                        <PostCard key={post.id} {...post} />
+                        <PostCard
+                           key={post.id}
+                           post={post}
+                           currentUserId={user?.id}
+                           onDelete={handlePostDeleted}
+                        />
                      ))}
                   </div>
 
-                  {/* Load More */}
-                  <div className='border-b border-border flex justify-center py-6 hover:bg-card/30 transition-colors cursor-pointer'>
-                     <span className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
-                        Load more posts
-                     </span>
-                  </div>
+                  {/* Loading State */}
+                  {isLoading && posts.length === 0 && (
+                     <div className='flex justify-center items-center py-12'>
+                        <Loader2 className='w-6 h-6 animate-spin text-primary' />
+                     </div>
+                  )}
+
+                  {/* Empty State */}
+                  {!isLoading && posts.length === 0 && !error && (
+                     <div className='px-6 py-12 text-center'>
+                        <p className='text-sm text-muted-foreground'>
+                           No posts yet. Be the first to share something!
+                        </p>
+                     </div>
+                  )}
+
+                  {/* Infinite Scroll Trigger */}
+                  {hasMore && (
+                     <div
+                        ref={loadMoreRef}
+                        className='border-b border-border flex justify-center py-6 hover:bg-card/30 transition-colors'
+                     >
+                        {isLoading ? (
+                           <Loader2 className='w-5 h-5 animate-spin text-primary' />
+                        ) : (
+                           <span className='text-sm text-muted-foreground'>
+                              Scroll for more
+                           </span>
+                        )}
+                     </div>
+                  )}
+
+                  {/* End of Feed */}
+                  {!hasMore && posts.length > 0 && (
+                     <div className='border-b border-border flex justify-center py-6'>
+                        <span className='text-sm text-muted-foreground'>
+                           You've reached the end
+                        </span>
+                     </div>
+                  )}
                </div>
 
                {/* Right Column - Sidebar */}

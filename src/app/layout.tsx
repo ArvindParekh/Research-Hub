@@ -4,6 +4,7 @@ import { stackClientApp } from "../stack/client";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 // const geistSans = Geist({
 //    variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
                <StackProvider app={stackClientApp}>
                   <StackTheme>{children}</StackTheme>
                </StackProvider>
+               <Toaster position='top-right' />
             </ThemeProvider>
          </body>
       </html>
