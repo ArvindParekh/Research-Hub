@@ -72,7 +72,7 @@ export function PostCard({ post, currentUserId, onDelete }: PostCardProps) {
          <div className='px-6 py-5 space-y-4'>
             {/* post header */}
             <div className='flex gap-4'>
-               <Link href={`/user/${post.authorId}`} className='shrink-0'>
+               <Link href={`/profile/${post.authorId}`} className='shrink-0'>
                   <Avatar className='w-12 h-12 border border-border/30 hover:ring-2 ring-primary/30 transition-all'>
                      <AvatarImage src={undefined} alt={authorName} />
                      <AvatarFallback>{authorInitials}</AvatarFallback>
@@ -82,7 +82,7 @@ export function PostCard({ post, currentUserId, onDelete }: PostCardProps) {
                <div className='flex-1 min-w-0'>
                   <div className='flex items-start justify-between gap-2'>
                      <Link
-                        href={`/user/${post.authorId}`}
+                        href={`/profile/${post.authorId}`}
                         className='flex-1 min-w-0'
                      >
                         <div className='flex items-baseline gap-2 flex-wrap'>
