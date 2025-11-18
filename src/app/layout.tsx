@@ -43,7 +43,7 @@ export default function RootLayout({
                <StackProvider app={stackClientApp}>
                   <StackTheme>{children}</StackTheme>
                </StackProvider>
-               <Toaster position='top-right' />
+               <Toaster position='bottom-right' />
             </ThemeProvider>
          </body>
       </html>

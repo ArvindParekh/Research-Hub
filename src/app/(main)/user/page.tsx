@@ -64,7 +64,7 @@ export default async function UserProfilePage() {
 
                   <div className='flex-1'>
                      <h1 className='text-4xl font-semibold mb-2'>
-                        {currentUser?.displayName && currentUser.displayName}
+                        {user.firstName} {user.lastName}
                      </h1>
                      <p className='text-lg text-muted-foreground mb-1'>
                         {user.title}
@@ -223,7 +223,10 @@ export default async function UserProfilePage() {
                      </h3>
                      <div className='space-y-4'>
                         {user.posts.map((post) => (
-                           <div className='pb-4 border-b border-border last:pb-0 last:border-0'>
+                           <div
+                              key={post.id}
+                              className='pb-4 border-b border-border last:pb-0 last:border-0'
+                           >
                               <p className='text-sm text-foreground'>
                                  {post.content && post.content.length > 0
                                     ? post.content
