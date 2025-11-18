@@ -19,6 +19,7 @@ export interface UserProfile {
       followers: number;
       following: number;
       publications: number;
+      posts: number;
       repositoryPapers: number;
    };
    researchInterests: {
@@ -82,6 +83,7 @@ export async function getUserProfile(
                      where: { status: "Accepted" },
                   },
                   publications: true,
+                  posts: true,
                   repositoryPapers: true,
                },
             },

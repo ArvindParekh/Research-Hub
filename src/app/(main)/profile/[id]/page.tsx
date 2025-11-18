@@ -12,6 +12,8 @@ import {
    UserCheck,
    Clock,
    Users,
+   Heart,
+   MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
@@ -20,7 +22,7 @@ import { getConnectionStatus } from "@/actions/user/get-connection-status";
 import { stackServerApp } from "@/stack/server";
 import { redirect } from "next/navigation";
 import { ConnectButton } from "@/components/profile/connect-button";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 export default async function ProfilePage({
    params,
@@ -55,6 +57,7 @@ export default async function ProfilePage({
 
    const profile = profileResponse.data;
    const isOwnProfile = currentUser?.id === id;
+   // const isOwnProfile = false;
 
    // get connection status if not own profile
    const connectionStatusResponse = !isOwnProfile
@@ -80,7 +83,9 @@ export default async function ProfilePage({
             <div className='mb-10'>
                <div className='flex flex-col md:flex-row gap-8 items-start'>
                   <Avatar className='w-32 h-32'>
-                     <AvatarImage src={undefined} />
+                     <AvatarImage
+                        src={currentUser?.profileImageUrl || "/placeholder.svg"}
+                     />
                      <AvatarFallback className='text-2xl'>
                         {initials}
                      </AvatarFallback>
@@ -287,12 +292,54 @@ export default async function ProfilePage({
                   )}
                </TabsContent>
 
-               <TabsContent value='posts'>
-                  <div className='border border-border rounded-lg p-6'>
-                     <p className='text-sm text-muted-foreground text-center'>
-                        User posts will be displayed here
-                     </p>
-                  </div>
+               <TabsContent value='posts' className='space-y-4'>
+                  {profile.posts.length > 0 ? (
+                     profile.posts.map((post) => (
+                        // creating custom post card here; or else just use the post card component from the feed
+                        <div
+                           key={post.id}
+                           className='border border-border rounded-lg p-6 hover:border-primary/50 transition-colors'
+                        >
+                           <div className='space-y-3'>
+                              <p className='text-sm text-foreground leading-relaxed whitespace-pre-wrap'>
+                                 {post.content && post.content.length > 0
+                                    ? post.content
+                                    : "No content"}
+                              </p>
+
+                              <div className='flex items-center justify-between pt-3 border-t border-border/50'>
+                                 <div className='flex items-center gap-4 text-xs text-muted-foreground'>
+                                    <div className='flex items-center gap-1.5'>
+                                       <Heart className='w-3.5 h-3.5' />
+                                       <span>{post._count.reactions}</span>
+                                    </div>
+                                    <div className='flex items-center gap-1.5'>
+                                       <MessageCircle className='w-3.5 h-3.5' />
+                                       <span>{post._count.comments}</span>
+                                    </div>
+                                 </div>
+                                 <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                                    <Clock className='w-3.5 h-3.5' />
+                                    <span>
+                                       {formatDistanceToNow(
+                                          new Date(post.createdAt),
+                                          {
+                                             addSuffix: true,
+                                          }
+                                       )}
+                                    </span>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     ))
+                  ) : (
+                     <div className='border border-border rounded-lg p-6'>
+                        <p className='text-sm text-muted-foreground text-center'>
+                           No posts yet
+                        </p>
+                     </div>
+                  )}
                </TabsContent>
             </Tabs>
          </div>
