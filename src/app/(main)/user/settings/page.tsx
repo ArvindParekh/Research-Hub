@@ -2,13 +2,40 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bell, Lock, Eye, Trash2, LogOut, Settings } from "lucide-react";
+import {
+   Bell,
+   Lock,
+   Eye,
+   Trash2,
+   LogOut,
+   Settings,
+   Loader2,
+   Download,
+} from "lucide-react";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import NavbarClient from "@/components/navbar-client";
+import { stackClientApp } from "@/stack/client";
+import { getUserProfile } from "@/actions/user/get-user-profile";
+import { updateUserProfile } from "@/actions/user/update-profile";
+import { deleteUser } from "@/actions/user/delete-user";
+import { useUser } from "@stackframe/stack";
+import { toast } from "sonner";
+import {
+   AlertDialog,
+   AlertDialogAction,
+   AlertDialogCancel,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
+   AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 const settingsTabs = [
    { id: "profile", label: "Profile", icon: Settings },
@@ -18,15 +45,34 @@ const settingsTabs = [
 ];
 
 export default function SettingsPage() {
+   const user = useUser();
+   const router = useRouter();
    const [activeTab, setActiveTab] = useState("profile");
+   const [isLoading, setIsLoading] = useState(true);
+   const [isSaving, setIsSaving] = useState(false);
+   const [isDeleting, setIsDeleting] = useState(false);
+   const [isDownloading, setIsDownloading] = useState(false);
+   const [originalFormData, setOriginalFormData] = useState({
+      firstName: "",
+      lastName: "",
+      email: "",
+      institution: "",
+      title: "",
+      website: "",
+      bio: "",
+      location: "",
+      designation: "",
+   });
    const [formData, setFormData] = useState({
-      firstName: "Alex",
-      lastName: "Johnson",
-      email: "ajohnson@stanford.edu",
-      institution: "Stanford University",
-      title: "Associate Professor",
-      bio: "Associate Professor specializing in quantum computing",
-      website: "https://alexjohnson.stanford.edu",
+      firstName: "",
+      lastName: "",
+      email: "",
+      institution: "",
+      title: "",
+      website: "",
+      bio: "",
+      location: "",
+      designation: "",
    });
 
    const [notifications, setNotifications] = useState({
@@ -42,6 +88,137 @@ export default function SettingsPage() {
       showOnlineStatus: true,
    });
 
+   useEffect(() => {
+      async function loadUserProfile() {
+         if (!user?.id) return;
+
+         setIsLoading(true);
+         try {
+            const response = await getUserProfile(user.id);
+            if (response.success && response.data) {
+               const profileData = {
+                  firstName: response.data.firstName || "",
+                  lastName: response.data.lastName || "",
+                  email: user.primaryEmail || "",
+                  institution: response.data.institution || "",
+                  title: response.data.title || "",
+                  website: response.data.website || "",
+                  bio: response.data.bio || "",
+                  location: response.data.location || "",
+                  designation: response.data.designation || "",
+               };
+               setFormData(profileData);
+               setOriginalFormData(profileData);
+            }
+         } catch (error) {
+            console.error("Failed to load user profile:", error);
+            toast.error("Failed to load profile");
+         } finally {
+            setIsLoading(false);
+         }
+      }
+
+      loadUserProfile();
+   }, [user?.id, user?.primaryEmail]);
+
+   const hasChanges = () => {
+      return Object.keys(formData).some(
+         (key) =>
+            formData[key as keyof typeof formData] !==
+            originalFormData[key as keyof typeof originalFormData]
+      );
+   };
+
+   const handleSave = async () => {
+      if (!hasChanges()) {
+         toast.info("No changes to save");
+         return;
+      }
+
+      setIsSaving(true);
+      try {
+         // only send changed fields
+         const changedFields: Record<string, string> = {};
+         Object.keys(formData).forEach((key) => {
+            if (
+               key !== "email" &&
+               formData[key as keyof typeof formData] !==
+                  originalFormData[key as keyof typeof originalFormData]
+            ) {
+               changedFields[key] = formData[key as keyof typeof formData];
+            }
+         });
+
+         const response = await updateUserProfile(changedFields);
+
+         if (response.success) {
+            toast.success("Profile updated successfully");
+            setOriginalFormData(formData);
+         } else {
+            toast.error(response.message || "Failed to update profile");
+         }
+      } catch (error) {
+         console.error("Error saving profile:", error);
+         toast.error("An error occurred while saving");
+      } finally {
+         setIsSaving(false);
+      }
+   };
+
+   const handleCancel = () => {
+      setFormData(originalFormData);
+      toast.info("Changes discarded");
+   };
+
+   const handleDelete = async () => {
+      setIsDeleting(true);
+      try {
+         const response = await deleteUser();
+
+         if (response.success) {
+            toast.success("Account deleted successfully");
+            router.push("/");
+         } else {
+            toast.error(response.message || "Failed to delete account");
+         }
+      } catch (error) {
+         console.error("Error deleting account:", error);
+         toast.error("An error occurred while deleting account");
+      } finally {
+         setIsDeleting(false);
+      }
+   };
+
+   const handleDownloadData = async () => {
+      setIsDownloading(true);
+      try {
+         const response = await getUserProfile(user?.id || "");
+
+         if (response.success && response.data) {
+            // create a blob and download it
+            const dataStr = JSON.stringify(response.data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `user-data-${new Date().toISOString()}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success("Data downloaded successfully");
+         } else {
+            toast.error("Failed to download data");
+         }
+      } catch (error) {
+         console.error("Error downloading data:", error);
+         toast.error("An error occurred while downloading data");
+      } finally {
+         setIsDownloading(false);
+      }
+   };
+
    const handleInputChange = (
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
    ) => {
@@ -50,11 +227,21 @@ export default function SettingsPage() {
    };
 
    const handleNotificationChange = (key: keyof typeof notifications) => {
-      setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+      setNotifications((prev) => {
+         const newValue = !prev[key];
+         // todo: save this to db
+         toast.success(`Notification preference updated`);
+         return { ...prev, [key]: newValue };
+      });
    };
 
    const handlePrivacyChange = (key: keyof typeof privacy) => {
-      setPrivacy((prev) => ({ ...prev, [key]: !prev[key] }));
+      setPrivacy((prev) => {
+         const newValue = !prev[key];
+         // todo: save this to db
+         toast.success(`Privacy setting updated`);
+         return { ...prev, [key]: newValue };
+      });
    };
 
    return (
@@ -105,99 +292,150 @@ export default function SettingsPage() {
                            <h2 className='text-xl font-semibold mb-6'>
                               Profile Information
                            </h2>
-                           <div className='space-y-6'>
-                              <div className='grid grid-cols-2 gap-6'>
+                           {isLoading ? (
+                              <div className='flex items-center justify-center py-12'>
+                                 <Loader2 className='w-6 h-6 animate-spin text-primary' />
+                              </div>
+                           ) : (
+                              <div className='space-y-6'>
+                                 <div className='grid grid-cols-2 gap-6'>
+                                    <div>
+                                       <label className='text-sm font-medium text-foreground mb-2 block'>
+                                          First Name
+                                       </label>
+                                       <Input
+                                          name='firstName'
+                                          value={formData.firstName}
+                                          onChange={handleInputChange}
+                                          className='border-border'
+                                       />
+                                    </div>
+                                    <div>
+                                       <label className='text-sm font-medium text-foreground mb-2 block'>
+                                          Last Name
+                                       </label>
+                                       <Input
+                                          name='lastName'
+                                          value={formData.lastName}
+                                          onChange={handleInputChange}
+                                          className='border-border'
+                                       />
+                                    </div>
+                                 </div>
+
                                  <div>
                                     <label className='text-sm font-medium text-foreground mb-2 block'>
-                                       First Name
+                                       Email
                                     </label>
                                     <Input
-                                       name='firstName'
-                                       value={formData.firstName}
+                                       name='email'
+                                       value={formData.email}
                                        onChange={handleInputChange}
                                        className='border-border'
                                     />
                                  </div>
+
+                                 <div className='grid grid-cols-2 gap-6'>
+                                    <div>
+                                       <label className='text-sm font-medium text-foreground mb-2 block'>
+                                          Institution
+                                       </label>
+                                       <Input
+                                          name='institution'
+                                          value={formData.institution}
+                                          onChange={handleInputChange}
+                                          className='border-border'
+                                       />
+                                    </div>
+                                    <div>
+                                       <label className='text-sm font-medium text-foreground mb-2 block'>
+                                          Title
+                                       </label>
+                                       <Input
+                                          name='title'
+                                          value={formData.title}
+                                          onChange={handleInputChange}
+                                          className='border-border'
+                                       />
+                                    </div>
+                                 </div>
+
+                                 <div className='grid grid-cols-2 gap-6'>
+                                    <div>
+                                       <label className='text-sm font-medium text-foreground mb-2 block'>
+                                          Location
+                                       </label>
+                                       <Input
+                                          name='location'
+                                          value={formData.location}
+                                          onChange={handleInputChange}
+                                          placeholder='e.g., Boston, MA'
+                                          className='border-border'
+                                       />
+                                    </div>
+                                    <div>
+                                       <label className='text-sm font-medium text-foreground mb-2 block'>
+                                          Designation
+                                       </label>
+                                       <Input
+                                          name='designation'
+                                          value={formData.designation}
+                                          onChange={handleInputChange}
+                                          placeholder='e.g., PhD Candidate'
+                                          className='border-border'
+                                       />
+                                    </div>
+                                 </div>
+
                                  <div>
                                     <label className='text-sm font-medium text-foreground mb-2 block'>
-                                       Last Name
+                                       Website
                                     </label>
                                     <Input
-                                       name='lastName'
-                                       value={formData.lastName}
+                                       name='website'
+                                       value={formData.website}
                                        onChange={handleInputChange}
                                        className='border-border'
                                     />
                                  </div>
-                              </div>
 
-                              <div>
-                                 <label className='text-sm font-medium text-foreground mb-2 block'>
-                                    Email
-                                 </label>
-                                 <Input
-                                    name='email'
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    className='border-border'
-                                 />
-                              </div>
-
-                              <div className='grid grid-cols-2 gap-6'>
                                  <div>
                                     <label className='text-sm font-medium text-foreground mb-2 block'>
-                                       Institution
+                                       Bio
                                     </label>
-                                    <Input
-                                       name='institution'
-                                       value={formData.institution}
+                                    <textarea
+                                       name='bio'
+                                       value={formData.bio}
                                        onChange={handleInputChange}
-                                       className='border-border'
+                                       rows={4}
+                                       className='w-full px-3 py-2 border border-border rounded-md text-sm bg-background text-foreground'
                                     />
                                  </div>
-                                 <div>
-                                    <label className='text-sm font-medium text-foreground mb-2 block'>
-                                       Title
-                                    </label>
-                                    <Input
-                                       name='title'
-                                       value={formData.title}
-                                       onChange={handleInputChange}
-                                       className='border-border'
-                                    />
+
+                                 <div className='flex gap-3 pt-4'>
+                                    <Button
+                                       onClick={handleSave}
+                                       disabled={!hasChanges() || isSaving}
+                                    >
+                                       {isSaving ? (
+                                          <>
+                                             <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                                             Saving...
+                                          </>
+                                       ) : (
+                                          "Save Changes"
+                                       )}
+                                    </Button>
+                                    <Button
+                                       variant='outline'
+                                       onClick={handleCancel}
+                                       disabled={!hasChanges() || isSaving}
+                                    >
+                                       Cancel
+                                    </Button>
                                  </div>
                               </div>
-
-                              <div>
-                                 <label className='text-sm font-medium text-foreground mb-2 block'>
-                                    Website
-                                 </label>
-                                 <Input
-                                    name='website'
-                                    value={formData.website}
-                                    onChange={handleInputChange}
-                                    className='border-border'
-                                 />
-                              </div>
-
-                              <div>
-                                 <label className='text-sm font-medium text-foreground mb-2 block'>
-                                    Bio
-                                 </label>
-                                 <textarea
-                                    name='bio'
-                                    value={formData.bio}
-                                    onChange={handleInputChange}
-                                    rows={4}
-                                    className='w-full px-3 py-2 border border-border rounded-md text-sm bg-background text-foreground'
-                                 />
-                              </div>
-
-                              <div className='flex gap-3 pt-4'>
-                                 <Button>Save Changes</Button>
-                                 <Button variant='outline'>Cancel</Button>
-                              </div>
-                           </div>
+                           )}
                         </div>
                      </div>
                   )}
@@ -401,17 +639,63 @@ export default function SettingsPage() {
                               <Button
                                  variant='outline'
                                  className='w-full justify-start bg-transparent'
+                                 onClick={handleDownloadData}
+                                 disabled={isDownloading}
                               >
-                                 <Eye className='w-4 h-4 mr-2' />
-                                 Download Your Data
+                                 {isDownloading ? (
+                                    <>
+                                       <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                                       Downloading...
+                                    </>
+                                 ) : (
+                                    <>
+                                       <Download className='w-4 h-4 mr-2' />
+                                       Download Your Data
+                                    </>
+                                 )}
                               </Button>
-                              <Button
-                                 variant='outline'
-                                 className='w-full justify-start text-destructive hover:bg-destructive/10 bg-transparent'
-                              >
-                                 <Trash2 className='w-4 h-4 mr-2' />
-                                 Delete Account
-                              </Button>
+                              <AlertDialog>
+                                 <AlertDialogTrigger asChild>
+                                    <Button
+                                       variant='outline'
+                                       className='w-full justify-start text-destructive hover:bg-destructive/10 bg-transparent'
+                                       disabled={isDeleting}
+                                    >
+                                       <Trash2 className='w-4 h-4 mr-2' />
+                                       Delete Account
+                                    </Button>
+                                 </AlertDialogTrigger>
+                                 <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                       <AlertDialogTitle>
+                                          Are you absolutely sure?
+                                       </AlertDialogTitle>
+                                       <AlertDialogDescription>
+                                          This action cannot be undone. This
+                                          will permanently delete your account
+                                          and remove your data from our servers.
+                                       </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                       <AlertDialogCancel>
+                                          Cancel
+                                       </AlertDialogCancel>
+                                       <AlertDialogAction
+                                          onClick={handleDelete}
+                                          className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                                       >
+                                          {isDeleting ? (
+                                             <>
+                                                <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                                                Deleting...
+                                             </>
+                                          ) : (
+                                             "Delete Account"
+                                          )}
+                                       </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                 </AlertDialogContent>
+                              </AlertDialog>
                            </div>
                         </div>
 
