@@ -4,28 +4,41 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Mail, MapPin, Briefcase, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import NavbarClient from "@/components/navbar-client";
+import { stackServerApp } from "@/stack/server";
+import { getUserProfile } from "@/actions/user/get-user-profile";
+import { format, formatDistanceToNow } from "date-fns";
 
-// Mock current user data - in a real app, this would come from authentication context
-const currentUser = {
-   id: "user-001",
-   name: "Dr. Alex Johnson",
-   title: "Associate Professor",
-   institution: "Stanford University",
-   location: "Stanford, CA",
-   email: "ajohnson@stanford.edu",
-   website: "https://alexjohnson.stanford.edu",
-   bio: "Associate Professor specializing in quantum computing and computational theory. Passionate about mentoring the next generation of computer scientists.",
-   field: "Quantum Computing",
-   hIndex: 28,
-   publications: 67,
-   citations: 3421,
-   students: 5,
-   avatar: "/academic-portrait.png",
-   joinDate: "January 2022",
-   lastActive: "2 hours ago",
-};
+// // Mock current user data - in a real app, this would come from authentication context
+// const currentUser = {
+//    id: "user-001",
+//    name: "Dr. Alex Johnson",
+//    title: "Associate Professor",
+//    institution: "Stanford University",
+//    location: "Stanford, CA",
+//    email: "ajohnson@stanford.edu",
+//    website: "https://alexjohnson.stanford.edu",
+//    bio: "Associate Professor specializing in quantum computing and computational theory. Passionate about mentoring the next generation of computer scientists.",
+//    field: "Quantum Computing",
+//    hIndex: 28,
+//    publications: 67,
+//    citations: 3421,
+//    students: 5,
+//    avatar: "/academic-portrait.png",
+//    joinDate: "January 2022",
+//    lastActive: "2 hours ago",
+// };
 
-export default function UserProfilePage() {
+export default async function UserProfilePage() {
+   const currentUser = await stackServerApp.getUser();
+
+   const userProfile = await getUserProfile(currentUser?.id!);
+
+   if (!userProfile.success || !userProfile.data) {
+      return <div>Error fetching user profile</div>;
+   }
+
+   const user = userProfile.data;
+
    return (
       <div className='min-h-screen bg-background'>
          {/* Header */}
@@ -38,39 +51,41 @@ export default function UserProfilePage() {
                <div className='flex flex-col md:flex-row gap-8 items-start'>
                   <Avatar className='w-32 h-32'>
                      <AvatarImage
-                        src={currentUser.avatar || "/placeholder.svg"}
+                        src={currentUser?.profileImageUrl || "/placeholder.svg"}
                      />
                      <AvatarFallback>
-                        {currentUser.name
-                           .split(" ")
-                           .map((n) => n[0])
-                           .join("")}
+                        {currentUser?.displayName &&
+                           currentUser.displayName
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                      </AvatarFallback>
                   </Avatar>
 
                   <div className='flex-1'>
                      <h1 className='text-4xl font-semibold mb-2'>
-                        {currentUser.name}
+                        {user.firstName} {user.lastName}
                      </h1>
                      <p className='text-lg text-muted-foreground mb-1'>
-                        {currentUser.title}
+                        {user.title}
                      </p>
                      <p className='text-base text-muted-foreground mb-4'>
-                        {currentUser.institution}
+                        {user.institution}
                      </p>
 
                      <div className='flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6'>
                         <div className='flex items-center gap-1'>
                            <MapPin className='w-4 h-4' />
-                           {currentUser.location}
+                           {user.location}
                         </div>
                         <div className='flex items-center gap-1'>
                            <Mail className='w-4 h-4' />
-                           {currentUser.email}
+                           {currentUser?.primaryEmail &&
+                              currentUser.primaryEmail}
                         </div>
                         <div className='flex items-center gap-1'>
                            <Briefcase className='w-4 h-4' />
-                           Member since {currentUser.joinDate}
+                           Member since {format(user.createdAt, "MMMM yyyy")}
                         </div>
                      </div>
 
@@ -81,10 +96,12 @@ export default function UserProfilePage() {
                               Edit Profile
                            </Button>
                         </Link>
-                        <Button size='sm' variant='outline'>
-                           <ExternalLink className='w-4 h-4 mr-2' />
-                           View Public Profile
-                        </Button>
+                        <Link href={`/profile/${currentUser?.id}`}>
+                           <Button size='sm' variant='outline'>
+                              <ExternalLink className='w-4 h-4 mr-2' />
+                              View Public Profile
+                           </Button>
+                        </Link>
                      </div>
                   </div>
                </div>
@@ -94,13 +111,13 @@ export default function UserProfilePage() {
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-12'>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {currentUser.hIndex}
+                     {user.hIndex}
                   </div>
                   <div className='text-xs text-muted-foreground'>H-Index</div>
                </div>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {currentUser.publications}
+                     {user._count.publications}
                   </div>
                   <div className='text-xs text-muted-foreground'>
                      Publications
@@ -108,13 +125,17 @@ export default function UserProfilePage() {
                </div>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {currentUser.citations}
+                     {user.publications.reduce(
+                        (acc, publication) =>
+                           acc + publication._count.citations_received,
+                        0
+                     )}
                   </div>
                   <div className='text-xs text-muted-foreground'>Citations</div>
                </div>
                <div className='border border-border rounded-lg p-4 text-center'>
                   <div className='text-3xl font-semibold text-primary mb-1'>
-                     {currentUser.students}
+                     {user.advisees.length}
                   </div>
                   <div className='text-xs text-muted-foreground'>Advisees</div>
                </div>
@@ -140,17 +161,30 @@ export default function UserProfilePage() {
                         Biography
                      </h3>
                      <p className='text-muted-foreground leading-relaxed text-sm'>
-                        {currentUser.bio}
+                        {user.bio}
                      </p>
                   </div>
 
                   <div className='border border-border rounded-lg p-6'>
-                     <h3 className='font-semibold text-foreground mb-3'>
-                        Research Focus
+                     <h3 className='font-semibold text-foreground mb-4'>
+                        Research Interests
                      </h3>
-                     <p className='text-muted-foreground text-sm'>
-                        {currentUser.field}
-                     </p>
+                     {user.researchInterests.length > 0 ? (
+                        <div className='flex flex-wrap gap-2'>
+                           {user.researchInterests.map((interest) => (
+                              <div
+                                 key={interest.id}
+                                 className='inline-flex items-center px-3 py-1.5 rounded-full text-sm bg-primary/10 text-primary border border-primary/20 font-medium'
+                              >
+                                 {interest.interest}
+                              </div>
+                           ))}
+                        </div>
+                     ) : (
+                        <p className='text-sm text-muted-foreground'>
+                           No research interests added yet
+                        </p>
+                     )}
                   </div>
                </TabsContent>
 
@@ -160,19 +194,33 @@ export default function UserProfilePage() {
                         Recent Publications
                      </h3>
                      <div className='space-y-4'>
-                        {[1, 2, 3].map((i) => (
+                        {user.publications.map((publication) => (
                            <div
-                              key={i}
+                              key={publication.id}
                               className='pb-4 border-b border-border last:pb-0 last:border-0'
                            >
                               <h4 className='font-medium text-foreground text-sm mb-1'>
-                                 Quantum Computing Applications in Machine
-                                 Learning
+                                 {publication.title}
                               </h4>
                               <p className='text-xs text-muted-foreground'>
-                                 Journal of Quantum Computing • 2024 • 45
+                                 {publication.journal} •{" "}
+                                 {publication.publicationDate
+                                    ? format(
+                                         publication.publicationDate,
+                                         "MMMM yyyy"
+                                      )
+                                    : "N/A"}{" "}
+                                 •{" "}
+                                 {publication._count.citations_received +
+                                    publication._count
+                                       .paperCitationsReceived}{" "}
                                  citations
                               </p>
+                              {publication.abstract && (
+                                 <p className='text-xs text-muted-foreground'>
+                                    {publication.abstract}
+                                 </p>
+                              )}
                            </div>
                         ))}
                      </div>
@@ -185,30 +233,27 @@ export default function UserProfilePage() {
                         Recent Activity
                      </h3>
                      <div className='space-y-4'>
-                        <div className='pb-4 border-b border-border last:pb-0 last:border-0'>
-                           <p className='text-sm text-foreground'>
-                              Connected with 3 new researchers
-                           </p>
-                           <p className='text-xs text-muted-foreground'>
-                              2 days ago
-                           </p>
-                        </div>
-                        <div className='pb-4 border-b border-border last:pb-0 last:border-0'>
-                           <p className='text-sm text-foreground'>
-                              Published a new paper
-                           </p>
-                           <p className='text-xs text-muted-foreground'>
-                              5 days ago
-                           </p>
-                        </div>
-                        <div className='pb-4 border-b border-border last:pb-0 last:border-0'>
-                           <p className='text-sm text-foreground'>
-                              Joined a research group
-                           </p>
-                           <p className='text-xs text-muted-foreground'>
-                              1 week ago
-                           </p>
-                        </div>
+                        {user.posts.map((post) => (
+                           <div
+                              key={post.id}
+                              className='pb-4 border-b border-border last:pb-0 last:border-0'
+                           >
+                              <p className='text-sm text-foreground'>
+                                 {post.content && post.content.length > 0
+                                    ? post.content
+                                    : "No content"}
+                              </p>
+                              <p className='text-xs text-muted-foreground'>
+                                 {formatDistanceToNow(post.createdAt)}
+                              </p>
+                              <p className='text-xs text-muted-foreground'>
+                                 {post._count.reactions} reactions
+                              </p>
+                              <p className='text-xs text-muted-foreground'>
+                                 {post._count.comments} comments
+                              </p>
+                           </div>
+                        ))}
                      </div>
                   </div>
                </TabsContent>

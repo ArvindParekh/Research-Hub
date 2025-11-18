@@ -1,4 +1,4 @@
-# Research Hub
+# Sociolect
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Version](https://img.shields.io/badge/version-0.1.0-lightgrey.svg)
@@ -7,15 +7,15 @@
 
 A unified platform for the global academic and research community.
 
-Research Hub is a comprehensive media platform designed to solve the digital fragmentation faced by researchers worldwide. By providing an integrated ecosystem for professional networking, collaboration, knowledge sharing, and career development, we're creating a centralized hub where academia connects, collaborates, and thrives.
+Sociolect is a comprehensive media platform designed to solve the digital fragmentation faced by researchers worldwide. By providing an integrated ecosystem for professional networking, collaboration, knowledge sharing, and career development, we're creating a centralized hub where academia connects, collaborates, and thrives.
 
 ## Vision
 
-The academic landscape is fragmented across countless platforms—professional networks, repositories, job boards, conference tools, and communication apps. Research Hub consolidates these tools into a single, integrated platform that adapts to how researchers actually work, eliminating the need to juggle multiple services and accounts.
+The academic landscape is fragmented across countless platforms—professional networks, repositories, job boards, conference tools, and communication apps. Sociolect consolidates these tools into a single, integrated platform that adapts to how researchers actually work, eliminating the need to juggle multiple services and accounts.
 
 ## The Unified Experience
 
-What sets Research Hub apart is the seamless integration across all features. When you apply for a job, your profile data flows automatically. When you publish a pre-print, it appears in your profile metrics instantaneously. When you collaborate on a project, all related publications, discussions, and documents are interconnected. This creates a living, breathing ecosystem where your academic identity is not scattered across platforms but unified in one place. The platform learns from your activity—the papers you read, the researchers you follow, the conferences you attend—and continuously refines your personalized feed, ensuring that the most relevant opportunities and content surface exactly when you need them.
+What sets Sociolect apart is the seamless integration across all features. When you apply for a job, your profile data flows automatically. When you publish a pre-print, it appears in your profile metrics instantaneously. When you collaborate on a project, all related publications, discussions, and documents are interconnected. This creates a living, breathing ecosystem where your academic identity is not scattered across platforms but unified in one place. The platform learns from your activity—the papers you read, the researchers you follow, the conferences you attend—and continuously refines your personalized feed, ensuring that the most relevant opportunities and content surface exactly when you need them.
 
 ## Core Features
 
@@ -33,7 +33,7 @@ The platform offers a comprehensive real-time collaboration suite designed speci
 
 ### Content and Knowledge Hub
 
-The Research Hub Repository serves as an integrated pre-print repository with advanced features beyond traditional repositories. It includes version control for tracking paper evolution, an Open Peer Review System that enables community-driven feedback, citation tracking and impact metrics, and advanced search functionality with filtering by discipline, keywords, and date.
+The Sociolect Repository serves as an integrated pre-print repository with advanced features beyond traditional repositories. It includes version control for tracking paper evolution, an Open Peer Review System that enables community-driven feedback, citation tracking and impact metrics, and advanced search functionality with filtering by discipline, keywords, and date.
 
 The Personalized Content Feed on the homepage intelligently curates content based on research interests and keywords, researchers and groups you follow, publication patterns and reading history, and recommended jobs and opportunities. This ensures that the most relevant information surfaces automatically, reducing the time spent searching for relevant content.
 
@@ -49,7 +49,7 @@ The Events and Conference Platform enables organizers to host multi-session virt
 
 ### Prerequisites
 
-Research Hub requires Node.js 18 or higher. We recommend using pnpm as the package manager, though npm or yarn will also work.
+Sociolect requires Node.js 18 or higher. We recommend using pnpm as the package manager, though npm or yarn will also work.
 
 ### Installation
 
@@ -81,7 +81,7 @@ pnpm start
 <!--
 ## Tech Stack
 
-Research Hub is built on Next.js 15 with the App Router, leveraging React 19 for the user interface. Authentication is handled through Stack Auth, and the UI is constructed using shadcn/ui components built on Radix UI primitives. Styling is managed through Tailwind CSS with a custom design system. TypeScript provides type safety throughout the codebase, and forms are handled with React Hook Form and validated using Zod schemas.
+Sociolect is built on Next.js 15 with the App Router, leveraging React 19 for the user interface. Authentication is handled through Stack Auth, and the UI is constructed using shadcn/ui components built on Radix UI primitives. Styling is managed through Tailwind CSS with a custom design system. TypeScript provides type safety throughout the codebase, and forms are handled with React Hook Form and validated using Zod schemas.
 -->
 
 ## License

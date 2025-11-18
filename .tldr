@@ -36,15 +36,15 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": -356.6201999907752,
-			"y": -181.82295985113274,
-			"lastActivityTimestamp": 1762637675038,
+			"x": 191.19710190294882,
+			"y": -195.6498519056977,
+			"lastActivityTimestamp": 1763439133520,
 			"meta": {}
 		},
 		{
-			"x": 969.9213600143271,
-			"y": 511.2472444233687,
-			"z": 0.9440712617888499,
+			"x": 1128.0510694208435,
+			"y": 616.9633862742085,
+			"z": 0.6147440774439024,
 			"meta": {},
 			"id": "camera:page:page",
 			"typeName": "camera"
@@ -53,9 +53,9 @@
 			"editingShapeId": null,
 			"croppingShapeId": null,
 			"selectedShapeIds": [
-				"shape:HYofwx3BNvStgfMkHaXtE"
+				"shape:bd7xM124OBQhm-zri3Wp4"
 			],
-			"hoveredShapeId": "shape:HYofwx3BNvStgfMkHaXtE",
+			"hoveredShapeId": null,
 			"erasingShapeIds": [],
 			"hintingShapeIds": [],
 			"focusedGroupId": null,
@@ -65,8 +65,8 @@
 			"typeName": "instance_page_state"
 		},
 		{
-			"x": -375.8828125,
-			"y": 147.0078125,
+			"x": -538.5521307890003,
+			"y": 190.92852843803007,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
@@ -98,6 +98,11 @@
 											"content": [
 												{
 													"type": "text",
+													"marks": [
+														{
+															"type": "highlight"
+														}
+													],
 													"text": "need to show designation and location on user profile settings page"
 												}
 											]
@@ -156,6 +161,45 @@
 			},
 			"parentId": "page:page",
 			"index": "a368r",
+			"typeName": "shape"
+		},
+		{
+			"x": -308.19770524428213,
+			"y": -102.92834048096756,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:bd7xM124OBQhm-zri3Wp4",
+			"type": "text",
+			"props": {
+				"color": "black",
+				"size": "m",
+				"w": 226.01773515997405,
+				"font": "draw",
+				"textAlign": "start",
+				"autoSize": false,
+				"scale": 2.2047255202116904,
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "add cloudflare r2"
+								}
+							]
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "a60H4",
 			"typeName": "shape"
 		},
 		{
@@ -284,8 +328,8 @@
 			"typeName": "shape"
 		},
 		{
-			"x": -488.03079426043917,
-			"y": -275.8994592349047,
+			"x": -531.9515101984692,
+			"y": -464.5958684501451,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
@@ -629,8 +673,8 @@
 			"screenBounds": {
 				"x": 0,
 				"y": 0,
-				"w": 1655,
-				"h": 983
+				"w": 1220,
+				"h": 759
 			},
 			"insets": [
 				false,

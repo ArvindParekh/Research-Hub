@@ -174,12 +174,20 @@ export function CreatePostCard({
 
             {/* selected image preview */}
             {selectedImage && (
-               <div className='relative w-full rounded-lg overflow-hidden bg-muted/50 border border-border/50 aspect-video'>
-                  <Image
-                     src={selectedImage || "/placeholder.svg"}
-                     alt='Preview'
-                     className='object-cover w-full h-full'
-                  />
+               <div className='relative w-full rounded-lg overflow-hidden bg-muted/50 border border-border/50'>
+                  <div
+                     className='relative w-full'
+                     style={{ maxHeight: "400px" }}
+                  >
+                     <Image
+                        src={selectedImage}
+                        alt='Preview'
+                        width={800}
+                        height={400}
+                        className='object-contain w-full h-auto max-h-[400px]'
+                        unoptimized
+                     />
+                  </div>
                   <Button
                      variant='ghost'
                      size='sm'
