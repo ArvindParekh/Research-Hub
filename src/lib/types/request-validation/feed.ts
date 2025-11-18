@@ -4,7 +4,7 @@ import {
    PostVisibility,
    ReactionType,
    AttachmentType,
-} from "@/generated/prisma/client";
+} from "@prisma/client";
 
 export const createPostSchema = z
    .object({
