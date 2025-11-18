@@ -36,6 +36,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { ResearchInterestsManager } from "@/components/user/research-interests-manager";
 
 const settingsTabs = [
   { id: "profile", label: "Profile", icon: Settings },
@@ -52,6 +53,9 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [researchInterests, setResearchInterests] = useState<
+    { id: string; interest: string }[]
+  >([]);
   const [originalFormData, setOriginalFormData] = useState({
     firstName: "",
     lastName: "",
@@ -109,6 +113,7 @@ export default function SettingsPage() {
           };
           setFormData(profileData);
           setOriginalFormData(profileData);
+          setResearchInterests(response.data.researchInterests || []);
         }
       } catch (error) {
         console.error("Failed to load user profile:", error);
@@ -435,6 +440,32 @@ export default function SettingsPage() {
                         </Button>
                       </div>
                     </div>
+                  )}
+                </div>
+
+                <div className="bg-card border border-border rounded-lg p-8">
+                  <h2 className="text-xl font-semibold mb-6">
+                    Research Interests
+                  </h2>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <ResearchInterestsManager
+                      initialInterests={researchInterests}
+                      onUpdate={async () => {
+                        // reload research interests after update
+                        if (user?.id) {
+                          const response = await getUserProfile(user.id);
+                          if (response.success && response.data) {
+                            setResearchInterests(
+                              response.data.researchInterests || [],
+                            );
+                          }
+                        }
+                      }}
+                    />
                   )}
                 </div>
               </div>

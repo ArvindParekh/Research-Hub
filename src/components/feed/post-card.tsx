@@ -121,9 +121,10 @@ export function PostCard({ post, currentUserId, onDelete }: PostCardProps) {
               <Image
                 src={imageAttachment.url}
                 alt="Post content"
-                width={560}
-                height={320}
-                className="w-full object-cover max-h-96"
+                width={800}
+                height={450}
+                className="w-full object-contain max-h-[500px] h-auto"
+                unoptimized
               />
             </div>
           )}
