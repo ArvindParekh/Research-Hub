@@ -17,35 +17,35 @@ import { Toaster } from "@/components/ui/sonner";
 // });
 
 const inter = Inter({
-   subsets: ["latin"],
-   variable: "--font-inter",
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-   title: "Research Hub",
-   description: "A platform for research collaboration and knowledge sharing",
+  title: "Sociolect",
+  description: "A platform for research collaboration and knowledge sharing",
 };
 
 export default function RootLayout({
-   children,
+  children,
 }: Readonly<{
-   children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-   return (
-      <html lang='en' suppressHydrationWarning>
-         <body className={`${inter.variable} antialiased`}>
-            <ThemeProvider
-               attribute='class'
-               defaultTheme='system'
-               enableSystem
-               disableTransitionOnChange
-            >
-               <StackProvider app={stackClientApp}>
-                  <StackTheme>{children}</StackTheme>
-               </StackProvider>
-               <Toaster position='bottom-right' />
-            </ThemeProvider>
-         </body>
-      </html>
-   );
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <StackProvider app={stackClientApp}>
+            <StackTheme>{children}</StackTheme>
+          </StackProvider>
+          <Toaster position="bottom-right" />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }

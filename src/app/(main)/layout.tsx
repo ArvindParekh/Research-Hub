@@ -2,16 +2,16 @@ import { stackServerApp } from "@/stack/server";
 import { redirect } from "next/navigation";
 
 export default async function MainLayout({
-   children,
+  children,
 }: {
-   children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-   // check if user is logged in
-   const user = await stackServerApp.getUser();
+  // check if user is logged in
+  const user = await stackServerApp.getUser();
 
-   if (!user) {
-      redirect("/");
-   }
+  if (!user) {
+    redirect("/");
+  }
 
-   return <>{children}</>;
+  return <>{children}</>;
 }
